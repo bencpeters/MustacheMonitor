@@ -8,7 +8,7 @@ var config = {
     },
     production:  {
         mongohq: {
-            host: process.env.MONGO_HOST
+            host: process.env.MONGO_HOST + '@alex.mongohq.com:10096/MustacheMonitor?auto_reconnect=true'
         }
     }
 };
