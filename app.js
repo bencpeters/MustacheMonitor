@@ -1,3 +1,4 @@
+var config = require('./config').config;
 
 /**
  * Module dependencies.
@@ -5,10 +6,16 @@
 
 var express = require('express')
   , routes = require('./routes')
+  , upload = require('./routes/upload')
   , user = require('./routes/user')
   , http = require('http')
   , path = require('path')
   , hbs = require('hbs');
+
+var db = require('mongoskin').db(config.mongohq.host)
+  , imagesAPI = require('./model/image');
+
+imagesAPI.setDb(db);
 
 var app = express();
 
@@ -30,6 +37,9 @@ app.configure('development', function(){
 
 app.get('/', routes.index);
 app.get('/users', user.list);
+
+//upload routes
+app.post('/upload', imagesAPI, upload.uploadImage);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
