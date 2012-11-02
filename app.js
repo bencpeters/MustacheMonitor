@@ -54,7 +54,7 @@ app.get('/images/:imageId', routes.viewImage);
 
 // user routes
 app.get('/user', session.requiresLogin, user.index );
-app.get('/user/create', session.requiresLogin, user.create);
+app.get('/user/create', user.createPage);
 app.get('/user/login', user.login );
 app.post('/user/login', user.processLogin );
 

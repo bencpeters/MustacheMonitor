@@ -17,8 +17,10 @@ exports.index = function(req, res){
   res.render('user', _user );
 };
 
-exports.create = function(req, res, next){
-	res.send("user create");
+exports.createPage = function(req, res, next){
+	// if( req.session.user ) res.redirect("/user");
+
+	res.render('user-create', {} );
 };
 
 
@@ -35,7 +37,7 @@ function userLogin(req, res, next){
 				req.session.user = user;
 				res.redirect("/user");
 			} else {
-				res.render('login', { error:'Invalid username or password.' });
+				res.render('login', { error:'Invalid username or password.', title: 'Error' });
 			}
 		});
 

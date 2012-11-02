@@ -1,0 +1,60 @@
+<div class="alert alert-danger">
+  <button type="button" class="close" data-dismiss="alert">×</button>
+  {{error}}
+</div>
+
+<form class="form-horizontal" action="/user/create" method="POST">
+    
+	<div class="control-group">
+		<label class="control-label" for="firstName">First Name:</label>
+		<div class="controls">
+			<input class="span3" id="firstName" type="text" name="firstName" value="" placeholder="" />
+		</div>		
+	</div>
+
+	<div class="control-group">
+		<label class="control-label" for="lastName">Last Name:</label>
+		<div class="controls">
+			<input class="span3" id="lastName" type="text" name="lastName" value="" placeholder="" />
+		</div>		
+	</div>
+
+	<div class="control-group">
+		<label class="control-label" for="email">E-mail:</label>
+		<div class="controls">
+			<input class="span3" id="email" type="text" id="email" name="email:email:required" onblur="this.value=this.value.replace( /\s+/g, '' );" value="" placeholder="" />
+		</div>	
+	</div>
+
+	<div class="control-group">
+		<label class="control-label" for="screenName">Screen Name:</label>
+		<div class="controls">
+			<input class="span3" id="screenName" type="text" name="screenName" value="" placeholder="" />
+		</div>		
+	</div>
+
+
+	<div class="control-group">
+		<label class="control-label" for="password">Password:</label>
+		<div class="controls">
+			<input class="span3" id="password" type="password" name="password" />
+		</div>		
+	</div>
+
+	<div class="control-group">
+		<label class="control-label" for="passwordConfirmation">Confirm Password:</label>
+		<div class="controls">
+			<input class="span3" id="passwordConfirmation" type="password" name="passwordConfirmation" />
+		</div>		
+	</div>
+
+    <div class="form-actions">
+		<button type="submit" class="btn btn-large btn-primary">Create Account</button>
+    </div>
+
+</form>
+
+
+
+
+
