@@ -29,9 +29,13 @@
 					<img src="/assets/img/mm_logo_trans.png" alt="Mustache Monitor" />
 				</div>
 
-				<!-- <div class="span6">
-					LOGIN
-				</div> -->
+				<div class="span6">
+					{{#if user}}
+						LOGIN
+					{{else}}
+						LOGOUT
+					{{/if}}
+				</div>
 
 			</div>
 			<br/>

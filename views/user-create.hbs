@@ -1,7 +1,9 @@
-<div class="alert alert-danger">
-  <button type="button" class="close" data-dismiss="alert">×</button>
-  {{error}}
-</div>
+{{#if error}}
+	<div class="alert alert-danger">
+	  <button type="button" class="close" data-dismiss="alert">×</button>
+	  {{error}}
+	</div>
+{{/if}}
 
 <form class="form-horizontal" action="/user/create" method="POST">
     
