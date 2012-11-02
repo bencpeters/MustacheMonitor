@@ -49,9 +49,10 @@ app.get('/', routes.index);
 app.get('/images/view/:imageId', routes.viewImage);
 
 // user routes
-app.get('/user', session.requiresLogin, user.index);
+app.get('/user', user.index );
 app.get('/user/create', session.requiresLogin, user.create);
-app.post('/user/login', user.login );
+app.get('/user/login', user.login );
+app.post('/user/login', user.processLogin );
 
 // session routes
 app.get('/session', session.index );

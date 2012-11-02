@@ -12,10 +12,11 @@ exports.create = function(req, res){
   res.send("session create");
 };
 
-function requiresLogin( req, res, next ){
+function requiresLogin( req, res ){
+	console.log(req.session);
 	if( req.session.user ){
-		next();
+		res.render('user');
 	} else {
-		res.redirect('/session/create?redir=' + req.url );
+		res.redirect('/session/create?redir=' + req.url);
 	}
 }

@@ -9,9 +9,12 @@ var users = {
 
 exports.authenticate = userAuthenticate;
 exports.login = userLogin;
+exports.processLogin = userLogin;
 
 exports.index = function(req, res){
-  res.send("user index");
+  var _user = req.session.user;
+  _user.title = 'User';
+  res.render('user', _user );
 };
 
 exports.create = function(req, res, next){
@@ -22,16 +25,20 @@ exports.create = function(req, res, next){
 // Functions
 
 function userLogin(req, res, next){
-	console.log("body "+req.body.password);
+	
+	if( req.session.user ) res.redirect("/user");
 
 	if( req.body.password && req.body.password.length ){
 		exports.authenticate( req.body.username, req.body.password, function( user ){
+			
 			if( user ){
 				req.session.user = user;
+				res.redirect("/user");
 			} else {
-				res.redirect('/session/create');
+				res.render('login', { error:'Invalid username or password.' });
 			}
 		});
+		
 	} else {
 		res.render("login", { title: "User Login" });
 	}
@@ -40,15 +47,16 @@ function userLogin(req, res, next){
 function userAuthenticate( username, password, callback ){
 
 	var user = users[username];
+	
 	if( !user ){
-		callback.apply( null, null );
-		return;
-	}
-	if( user.password == password ){
-		callback.apply( null, user );
+		callback.call( null, null );
 		return;
 	}
 	
-	callback.apply( null, null );
-	// res.send("user create");
+	if( user.password == password ){
+		callback.call( null, user );
+		return;
+	}
+	
+	callback.call( null, null );
 };
