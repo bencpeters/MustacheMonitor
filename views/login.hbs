@@ -29,10 +29,12 @@
 
 </style>
 
-<div class="alert alert-danger">
-  <button type="button" class="close" data-dismiss="alert">×</button>
-  {{error}}
-</div>
+{{#if error}}
+	<div class="alert alert-danger">
+	  <button type="button" class="close" data-dismiss="alert">×</button>
+	  {{error}}
+	</div>
+{{/if}}
 
 <form action="/user/login" method="POST" class="form-signin">
 	<h2 class="form-signin-heading">Please sign in</h2>
