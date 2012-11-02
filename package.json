@@ -12,6 +12,7 @@
     , "mongoskin": "0.3.6"
     , "mocha" : "1.4.2"
     , "imagemagick" : "*"
+    , "connect" : "*"
   }
   , "devDependencies": {
           "supertest": "0.4.0"

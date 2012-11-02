@@ -8,6 +8,7 @@ var express = require('express')
   , routes = require('./routes')
   , upload = require('./routes/upload')
   , user = require('./routes/user')
+  , session = require('./routes/session')
   , http = require('http')
   , path = require('path')
   , hbs = require('hbs');
@@ -18,6 +19,7 @@ var db = require('mongoskin').db(config.mongohq.host)
 imagesAPI.setDb(db);
 
 var app = express();
+var MemStore = require('connect').session.MemoryStore;
 
 app.configure(function(){
   app.set('port', process.env.PORT || 3000);
@@ -27,6 +29,10 @@ app.configure(function(){
   app.use(express.logger('dev'));
   app.use(express.bodyParser());
   app.use(express.methodOverride());
+  app.use(express.cookieParser());
+  app.use(express.session({secret: 's3cret$t@che', store: MemStore({
+    reapInterval: 6000 * 10
+  })}));
   app.use(app.router);
   app.use(express.static(path.join(__dirname, 'public')));
 });
