@@ -28,20 +28,14 @@ function getImage(imageID, callback){
 }
 
 function saveImage(user, image, callback){
-    console.log('in save Image');
-    console.log('db: ' + db);
     var id = new ObjectId();
     var theImage = new gsFile(db, id, 'w');
     theImage.open(function(err, file) {
-        console.log('open');
         if (err) { 
-            console.log('in error: ' + err);
             return callback.call(err, err); 
         }
         file.writeFile(image, function(err, res) {
-            console.log('write file');
             if (err) {
-                console.log('error: ' + err);
                 return callback.call(err, err);
             }
             return callback.apply(res, [null, id]); 

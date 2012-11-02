@@ -17,6 +17,10 @@ var db = require('mongoskin').db(config.mongohq.host)
   , imagesAPI = require('./model/image')
   , userAPI = require('./model/user');
 
+db.open(function(err, res) {
+    console.log('db open: ' + err);
+});
+
 imagesAPI.setDb(db);
 
 var app = express();
