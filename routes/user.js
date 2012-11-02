@@ -7,10 +7,10 @@ var users = {
 	'stache': {username: 'stache', password: 'curly', role: 'user'}
 };
 
-exports.authenticate = userAuthenticate;
 exports.login = userLogin;
 exports.processLogin = userLogin;
 exports.logout = userLogout;
+exports.getSequence = getSequence;
 
 exports.index = function(req, res){
   var _user = req.session.user;
@@ -55,13 +55,14 @@ function userLogin(req, res, next){
 	if( req.session.user ) res.redirect("/user");
 
 	if( req.body.password && req.body.password.length ){
-		exports.authenticate( req.body.username, req.body.password, function( user ){
-			
+        req.app.locals.userAPI.authenticateUser(req.body.username,
+            req.body.password, function(err, user) {
 			if( user ){
-				req.session.user = user;
-				res.redirect("/user");
+                var url = req.session.prev ? req.session.prev : '/user';
+                req.session.user = user;
+                res.redirect(url);
 			} else {
-				res.render('login', { error:'Invalid username or password.', title: 'Error' });
+				res.render('login', { error: err, title: 'Error'});
 			}
 		});
 
@@ -70,19 +71,13 @@ function userLogin(req, res, next){
 	}
 };
 
-function userAuthenticate( username, password, callback ){
-
-	var user = users[username];
-	
-	if( !user ){
-		callback.call( null, null );
-		return;
-	}
-	
-	if( user.password == password ){
-		callback.call( null, user );
-		return;
-	}
-	
-	callback.call( null, null );
+function getSequence(req, res, next) {
+    req.app.locals.userAPI.getUserSequence(req.params.userId,
+        function(err, seq) {
+        if (err) {
+            return res.send(err);
+        }
+        res.contentType('application/json');
+        res.send(seq);
+    });
 };

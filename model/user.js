@@ -1,4 +1,5 @@
-var db;
+var db
+  , ObjectId = require('mongoskin').ObjectID;
 
 var pwHash = require('password-hash');
 
@@ -7,9 +8,10 @@ exports.setDb = setDb;
 exports.createUser = createUser;
 exports.deleteUser = deleteUser;
 exports.authenticateUser = authenticateUser;
+exports.getUserSequence = userSequence;
 
 function setDb(database) {
-    db = database.db;
+    db = database;
 }
 
 function createUser(user, callback) {
@@ -27,8 +29,30 @@ function deleteUser(callback) {
 
 }
 
-function authenticateUser(callback) {
+function authenticateUser(user, pw, callback) {
+    db.collection('users').findOne({'screenName': user}, function(err, res) {
+        if (err) { return callback.call(err, err); }
+        if (res === null) {
+            var errMsg = "Invalid username or password.";
+            return callback.call(errMsg, errMsg);
+        }
+        if (pwHash.verify(pw, res.password)) {
+            delete res.password;
+            return callback.call(res, null, res);
+        } else {
+            var errMsg = "Invalid username or password.";
+            return callback.call(errMsg, errMsg);
+        }
+    });
 
+}
+
+function userSequence(user, callback) {
+    var id = new ObjectId(user);
+    db.collection('users').findById(id, {sequences: true, _id: 0}, function(err, res) {
+        if (err) { return callback.call(err, err); }
+        return callback.call(res.sequences[0], null, res.sequences[0]);
+    });
 }
 
 function validateUser(user, callback) {

@@ -13,10 +13,11 @@ exports.create = function(req, res){
 };
 
 function requiresLogin( req, res, next ){
-	
+console.log('requires login');	
 	if( req.session.user ){
 		next();
 	} else {
-		res.redirect('/user/login?redir=' + req.url);
+        req.session.prev = req.url;
+		res.redirect('/user/login');
 	}
 }

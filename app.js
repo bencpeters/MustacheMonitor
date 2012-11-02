@@ -27,7 +27,7 @@ userAPI.setDb(db);
 var app = express();
 var MemStore = require('connect').session.MemoryStore;
 
-hbs.registerHelper('error', function(items, options) {
+hbs.registerHelper('printError', function(items, options) {
     var out = "";
     for(var i=0; i < items.length; i++) {
         out = out + options.fn(items[i]) + '<br>';
@@ -69,6 +69,7 @@ app.get('/user/edit/:userId', user.edit);
 app.get('/user/login', user.login );
 app.post('/user/login', user.processLogin );
 app.get('/user/logout', user.logout );
+app.post('/user/:userId/sequence', session.requiresLogin, user.getSequence);
 
 // session routes
 app.get('/session', session.index );
