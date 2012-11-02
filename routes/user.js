@@ -19,7 +19,7 @@ exports.index = function(req, res){
 
 exports.createPage = function(req, res, next){
 	// if( req.session.user ) res.redirect("/user");
-	res.render('user-create', {} );
+	res.render('user-create', {title: "Create User"} );
 };
 
 exports.create = function(req, res, next) {
