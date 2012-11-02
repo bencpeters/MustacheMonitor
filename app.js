@@ -17,6 +17,10 @@ var db = require('mongoskin').db(config.mongohq.host)
   , imagesAPI = require('./model/image')
   , userAPI = require('./model/user');
 
+db.open(function(err) {
+    if (err) {console.log("Error connecting to mongo: " + err);}
+});
+
 imagesAPI.setDb(db);
 
 var app = express();
