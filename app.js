@@ -12,6 +12,7 @@ var express = require('express')
   , http = require('http')
   , path = require('path')
   , hbs = require('hbs');
+console.log(config.mongohq.host);
 
 var db = require('mongoskin').db(config.mongohq.host)
   , imagesAPI = require('./model/image')
