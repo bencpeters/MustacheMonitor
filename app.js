@@ -46,7 +46,11 @@ app.configure('development', function(){
 });
 
 app.get('/', routes.index);
-app.get('/images/view/:imageId', routes.viewImage);
+<<<<<<< HEAD
+app.get('/users', user.list);
+app.post('/users/create', user.create);
+
+app.get('/images/:imageId', routes.viewImage);
 
 // user routes
 app.get('/user', session.requiresLogin, user.index );

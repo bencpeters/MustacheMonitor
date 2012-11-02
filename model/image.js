@@ -35,7 +35,6 @@ function saveImage(user, image, callback){
             return callback.call(err, err); 
         }
         file.writeFile(image, function(err, res) {
-            //theImage.close();
             if (err) {
                 return callback.call(err, err);
             }
