@@ -46,10 +46,6 @@ app.configure('development', function(){
 });
 
 app.get('/', routes.index);
-<<<<<<< HEAD
-app.get('/users', user.list);
-app.post('/users/create', user.create);
-
 app.get('/images/:imageId', routes.viewImage);
 
 // user routes
