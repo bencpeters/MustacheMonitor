@@ -1,5 +1,4 @@
 exports.uploadImage = function(req, res, next) {
-    console.log(req);
     var imagesAPI = req.app.locals.imagesAPI;
     if (req.files.displayImage.size > 0) {
         imagesAPI.saveImage('blah', req.files.displayImage.path,

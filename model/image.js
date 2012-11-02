@@ -12,7 +12,6 @@ function setDb(database) {
 
 function getImage(imageID, callback){
     var id = new ObjectId(imageID);
-    console.log(id);
     var theImage = new gsFile(db, id, 'r');
     theImage.open(function(err, file) {
         if (err) {
