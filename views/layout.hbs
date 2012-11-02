@@ -30,10 +30,10 @@
 				</div>
 
 				<div class="span6">
-					{{#if user}}
-						LOGIN
-					{{else}}
+					{{#if req.session.user}}
 						<a href="/user/logout" title="Logout"><i class="icon icon-lock"></i> Logout</a>
+					{{else}}
+						<a href="/user/login" title="Logout"><i class="icon icon-user"></i> Login</a>
 					{{/if}}
 				</div>
 
