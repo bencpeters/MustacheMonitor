@@ -19,13 +19,20 @@ exports.index = function(req, res){
 
 exports.createPage = function(req, res, next){
 	// if( req.session.user ) res.redirect("/user");
-
 	res.render('user-create', {} );
 };
 
+exports.create = function(req, res, next) {
+    req.app.locals.userAPI.createUser(req.form, function(err, user) {
+        if (err) {
+            req.form.errors = err;
+            return res.redirect('/user/create');
+        }
+        return res.redirect('/user/' + user.id_);
+    });
+}
 
 // Functions
-
 function userLogin(req, res, next){
 
 	if( req.session.user ) res.redirect("/user");
