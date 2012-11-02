@@ -49,7 +49,7 @@ app.get('/', routes.index);
 app.get('/users', user.list);
 app.post('/users/create', user.create);
 
-app.get('/images/view/:imageId', routes.viewImage);
+app.get('/images/:imageId', routes.viewImage);
 
 //upload routes
 app.get('/upload', imagesAPI, upload.uploadPage);
