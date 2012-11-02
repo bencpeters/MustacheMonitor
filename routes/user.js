@@ -25,7 +25,7 @@ exports.create = function(req, res, next){
 // Functions
 
 function userLogin(req, res, next){
-	
+
 	if( req.session.user ) res.redirect("/user");
 
 	if( req.body.password && req.body.password.length ){
@@ -38,7 +38,7 @@ function userLogin(req, res, next){
 				res.render('login', { error:'Invalid username or password.' });
 			}
 		});
-		
+
 	} else {
 		res.render("login", { title: "User Login" });
 	}
