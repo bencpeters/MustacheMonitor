@@ -19,17 +19,24 @@ exports.index = function(req, res){
 };
 
 exports.createPage = function(req, res, next){
+    if (req.session.errors) {
+        var errors = req.session.errors;
+        delete req.session.errors;
+    } else {
+        errors = "";
+    }
 	if( req.session.user ) res.redirect("/user");
-	res.render('user-create', {title: "Create User"} );
+	res.render('user-create', {title: "Create User",
+                               errors: errors} );
 };
 
 exports.create = function(req, res, next) {
-    req.app.locals.userAPI.createUser(req.form, function(err, user) {
+    req.app.locals.userAPI.createUser(req.body, function(err, user) {
         if (err) {
-            req.form.errors = err;
+            req.session.errors = err;
             return res.redirect('/user/create');
         }
-        return res.redirect('/user/' + user.id_);
+        return res.redirect('/user/' + user._id);
     });
 }
 

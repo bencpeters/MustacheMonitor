@@ -22,9 +22,18 @@ db.open(function(err) {
 });
 
 imagesAPI.setDb(db);
+userAPI.setDb(db);
 
 var app = express();
 var MemStore = require('connect').session.MemoryStore;
+
+hbs.registerHelper('error', function(items, options) {
+    var out = "";
+    for(var i=0; i < items.length; i++) {
+        out = out + options.fn(items[i]) + '<br>';
+    }
+    return out;
+});
 
 app.configure(function(){
   app.set('port', process.env.PORT || 3000);

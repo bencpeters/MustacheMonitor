@@ -13,12 +13,12 @@ function setDb(database) {
 }
 
 function createUser(user, callback) {
-    validateUser(user, function(err) {
+    validateUser(user, function(err, user) {
         if (err) { return callback.call(err, err); }
         db.collection('users').insert(user, {safe:true},
             function(err, res) {
             if (err) { return callback.call(err, err); }
-            return callback.call(res, null, res);
+            return callback.call(res[0], null, res[0]);
         });
     });
 }
@@ -34,17 +34,17 @@ function authenticateUser(callback) {
 function validateUser(user, callback) {
     var errors = new Array();
     var userObj = {};
-    if (!user.hasOwnProperty('email')) {
+    if (user.email.length === 0) {
         errors.push({msg: 'Need to specify an email'});
     } else {
         userObj['email'] = user.email;
     }
     var passwordChecks = true;
-    if (!user.hasOwnProperty('password')) {
+    if (user.password.length === 0) {
         errors.push({msg: 'No password specified'});
         passwordChecks = false;
     }
-    if (!user.hasOwnProperty('passwordConfirmation')) {
+    if (user.passwordConfirmation.length === 0) {
         errors.push({msg: 'No password confirmation specified'});
         passwordChecks = false;
     }
@@ -59,33 +59,31 @@ function validateUser(user, callback) {
     if (passwordChecks) {
         userObj['password'] = pwHash.generate(user.password);
     }
-    if (!user.hasOwnProperty('firstName')) {
+    if (user.firstName.length === 0) {
         errors.push({msg: 'No first name specified'});
     } else {
         userObj['firstName'] = user.firstName;
     }
-    if (!user.hasOwnProperty('lastName')) {
+    if (user.lastName.length === 0) {
         errors.push({msg: 'No last name specified'});
     } else {
         userObj['lastName'] = user.lastName;
     }
-    if (!user.hasOwnProperty('screenName') && userObj.hasOwnProperty('email')) {
+    if (user.screenName.length === 0 && userObj.hasOwnProperty('email')) {
         userObj['screenName'] = userObj.email;
-    } else if (user.hasOwnProperty('screenName')) {
+    } else if (user.screenName.length > 0) {
         userObj['screenName'] = user.screenName;
     }
 
     if (errors.length === 0) {
-        db.collection('users').find({screenName: userObj.screenName}, 
-            {'limit': 1, '_id' : 1}, function(err, res) {
+        db.collection('users').findOne({screenName: userObj.screenName}, function(err, res) {
             if (err) { return callback.call(err, err); }
-            if (res.size() > 0) {
+            if (res !== null) {
                 errors.push({msg: 'Screen name already taken!'});
             }
-            db.collection('users').find({email: userObj.email}, 
-                {'limit': 1, '_id':1}, function(err, res) {
+            db.collection('users').findOne({email: userObj.email}, function(err, res) {
                 if (err) { return callback.call(err, err); }
-                if (res.size() > 0) {
+                if (res !== null) {
                     errors.push({msg: 'Email already taken!'});
                 }
                 if (errors.length > 0) {
