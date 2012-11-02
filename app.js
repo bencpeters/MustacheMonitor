@@ -59,6 +59,7 @@ app.post('/user/create', user.create);
 app.get('/user/edit/:userId', user.edit);
 app.get('/user/login', user.login );
 app.post('/user/login', user.processLogin );
+app.get('/user/logout', user.logout );
 
 // session routes
 app.get('/session', session.index );

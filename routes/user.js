@@ -10,6 +10,7 @@ var users = {
 exports.authenticate = userAuthenticate;
 exports.login = userLogin;
 exports.processLogin = userLogin;
+exports.logout = userLogout;
 
 exports.index = function(req, res){
   var _user = req.session.user;
@@ -33,6 +34,15 @@ exports.create = function(req, res, next) {
 }
 
 // Functions
+function userLogout(req, res, next){
+
+	if( req.session.user ){
+		delete req.session.user;
+	}
+	 
+	res.redirect('/user');
+}
+
 function userLogin(req, res, next){
 
 	if( req.session.user ) res.redirect("/user");
