@@ -17,8 +17,8 @@ function createUser(user, callback) {
         if (err) { return callback.call(err, err); }
         db.collection('users').insert(user, {safe:true},
             function(err, res) {
-            if (err) { callback.call(err, err); }
-            callback.call(res, null, res);
+            if (err) { return callback.call(err, err); }
+            return callback.call(res, null, res);
         });
     });
 }
@@ -75,11 +75,28 @@ function validateUser(user, callback) {
         userObj['screenName'] = user.screenName;
     }
 
-    userObj['sequences'] = new Array();
-
-    if (errors.length > 0) {
-        callback.call(errors, errors);
+    if (errors.length === 0) {
+        db.collection('users').find({screenName: userObj.screenName}, 
+            {'limit': 1, '_id' : 1}, function(err, res) {
+            if (err) { return callback.call(err, err); }
+            if (res.size() > 0) {
+                errors.push({msg: 'Screen name already taken!'});
+            }
+            db.collection('users').find({email: userObj.email}, 
+                {'limit': 1, '_id':1}, function(err, res) {
+                if (err) { return callback.call(err, err); }
+                if (res.size() > 0) {
+                    errors.push({msg: 'Email already taken!'});
+                }
+                if (errors.length > 0) {
+                    return callback.call(errors, errors);
+                } else {
+                    userObj['sequences'] = new Array();
+                    return callback.call(userObj, null, userObj);
+                }
+            });
+        });
     } else {
-        callback.call(userObj, null, userObj);
+            callback.call(errors, errors);
     }
 }
