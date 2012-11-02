@@ -46,10 +46,16 @@ app.configure('development', function(){
 });
 
 app.get('/', routes.index);
-app.get('/users', user.list);
-app.post('/users/create', user.create);
-
 app.get('/images/view/:imageId', routes.viewImage);
+
+// user routes
+app.get('/user', session.requiresLogin, user.index);
+app.get('/user/create', session.requiresLogin, user.create);
+app.post('/user/login', user.login );
+
+// session routes
+app.get('/session', session.index );
+app.get('/session/create', session.create );
 
 //upload routes
 app.get('/upload', imagesAPI, upload.uploadPage);
