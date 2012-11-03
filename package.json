@@ -17,6 +17,7 @@
     , "temp" : "*"
     , "fs" : "*"
     , "path" : "*"
+    , "oauth" : "*"
   }
   , "devDependencies": {
           "supertest": "0.4.0"

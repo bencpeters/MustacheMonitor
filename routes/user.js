@@ -131,9 +131,9 @@ function addImageToSequence(req, res, next) {
 function generateGif(req, res, next) {
     req.app.locals.imagesAPI.createGif({sequence: req.body.sequence,
         api: req.app.locals.userAPI,
-        id: req.session.user._id }, function(err, res) {
+        id: req.session.user._id }, function(err, result) {
         if (err) { return res.send(err, 500); }
-        res.send(res);
+        res.send(result);
     });
 }
 

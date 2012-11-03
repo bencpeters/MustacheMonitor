@@ -2,6 +2,8 @@
  * Session
  */
 
+var oauth = require('oauth');
+
 exports.requiresLogin = requiresLogin;
 
 exports.index = function(req, res){
