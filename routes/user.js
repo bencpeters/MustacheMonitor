@@ -6,6 +6,7 @@
 var users = {
 	'stache': {username: 'stache', password: 'curly', role: 'user'}
 };
+var config = require('../config').config;
 
 exports.login = userLogin;
 exports.processLogin = userLogin;
@@ -179,6 +180,9 @@ function generateGif(req, res, next) {
         api: req.app.locals.userAPI,
         id: req.session.user._id }, function(err, result) {
         if (err) { return res.send(err, 500); }
+        result = { id: result,
+                   url: config.baseUrl + '/user/'  + 
+            req.session.user.screenName + '/' + result};
         res.send(result);
     });
 }
@@ -190,6 +194,9 @@ function generateGifFromSequence(req, res, next) {
             api: req.app.locals.userAPI,
             id: req.session.user._id }, function(err, result) {
             if (err) { return res.send(err, 500); }
+            result = { id: result,
+                       url: config.baseUrl + '/user/'  + 
+                req.session.user.screenName + '/' + result};
             res.send(result);
         });
     });
