@@ -31,12 +31,10 @@
 
 					<center>
 						<h1>Share Your Stache
-						
-						{{#if app.req.session.user}}
+						{{#if loggedIn }}
 							<a href="/user/logout" class="btn btn-info" title="Logout"><i class="icon-white icon-lock"></i> Logout</a>
 						{{else}}
 							<a href="/user/login" class="btn btn-info" title="Login"><i class="icon-white icon-user"></i> Login</a>
-							<a href="/user/logout" class="btn btn-danger" title="Logout"><i class="icon-white icon-lock"></i> Logout</a>
 						{{/if}}
 						</h1>
 						

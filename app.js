@@ -35,6 +35,11 @@ hbs.registerHelper('printError', function(items, options) {
     return out;
 });
 
+hbs.registerHelper('loggedIn', function(item, options) {
+    return this.loggedIn;
+});
+
+
 app.configure(function(){
   app.set('port', process.env.PORT || 3000);
   app.set('views', __dirname + '/views');
@@ -47,12 +52,25 @@ app.configure(function(){
   app.use(express.session({secret: 's3cret$t@che', store: MemStore({
     reapInterval: 6000 * 10
   })}));
+  app.use(function(req, res, next) {
+        res.locals.loggedIn = (function() {
+            if (req.session && req.session.user) {
+                return true;
+            } else {
+                return false;
+            }
+        })();
+        next();
+  });
   app.use(app.router);
   app.use(express.static(path.join(__dirname, 'public')));
 });
 
-app.locals['imagesAPI'] = imagesAPI;
-app.locals['userAPI'] = userAPI;
+  app.locals({
+        imagesAPI: imagesAPI,
+        userAPI: userAPI
+  });
+    
 
 app.configure('development', function(){
   app.use(express.errorHandler());
