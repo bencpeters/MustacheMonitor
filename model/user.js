@@ -142,3 +142,18 @@ function validateUser(user, callback) {
             callback.call(errors, errors);
     }
 }
+
+exports.checkGifHash = function (user, hash, callback) {
+    
+    db.collection('users').findOne({"screenName": user},{"sequences.gif": 1}, function(err, res) {
+        
+        if (err) { return callback.call(err, err); }
+
+        if( res.sequences[0] && res.sequences[0].gif === hash ){
+            return callback.call( hash, null, hash );
+        }
+
+        return callback.call(err, 'Invalid hash');
+    });
+
+}

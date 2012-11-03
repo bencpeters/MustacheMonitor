@@ -12,6 +12,7 @@ exports.processLogin = userLogin;
 exports.logout = userLogout;
 exports.getSequence = getSequence;
 exports.addImage = addImageToSequence;
+exports.getAnimation = getAnimation;
 
 exports.index = function(req, res){
   var _user = req.session.user;
@@ -43,6 +44,27 @@ exports.create = function(req, res, next) {
 }
 
 // Functions
+
+function getAnimation(req, res, next){
+
+	req.app.locals.userAPI.checkGifHash( req.params.screenName, req.params.gifHash, function( err, res ){
+		if ( err ) return next();
+		
+		req.app.locals.imagesAPI.getImage( res,
+		      function(err, data) {
+		      if (err) return next();
+
+		      // res.contentType('image/jpg');
+		      // res.end(data);
+
+			  res.render("user-animation");
+
+		  });
+
+	});
+
+}
+
 function userLogout(req, res, next){
 
 	if( req.session.user ){

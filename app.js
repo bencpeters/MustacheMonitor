@@ -73,6 +73,7 @@ app.post('/user/sequence', session.requiresLogin, user.getSequence);
 app.post('/user/addimage', session.requiresLogin, user.addImage);
 app.post('/user/setsequence', session.requiresLogin, user.setSequence);
 app.post('/user/generate', session.requiresLogin, user.generateGif);
+app.get('/user/:screenName/:gifHash', user.getAnimation );
 
 // session routes
 app.get('/session', session.index );
