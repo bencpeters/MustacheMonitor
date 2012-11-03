@@ -137,7 +137,8 @@ function generateGifFromSequence(req, res, next) {
     req.app.locals.userAPI.getUserSequence(req.session.user._id, function(err, result) {
         if (err) { return res.send(err, 500); }
         req.app.locals.imagesAPI.createGif({sequence: result.sequence,
-            api: req.app.locals.userAPI}, function(err, result) {
+            api: req.app.locals.userAPI,
+            id: req.session.user._id }, function(err, result) {
             if (err) { return res.send(err, 500); }
             res.send(result);
         });

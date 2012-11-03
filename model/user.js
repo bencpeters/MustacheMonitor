@@ -1,4 +1,4 @@
-var db
+id db
   , ObjectId = require('mongoskin').ObjectID;
 
 var pwHash = require('password-hash');
@@ -64,7 +64,6 @@ function addImageToUser(params, callback) {
         if (err) { return callback.call(err, err); }
         var gifId = null;
         var sequence = new Array();
-        console.log(res);
         if (typeof res !== 'undefined') {
             gifId = res.gif;
             sequence = res.sequence;
