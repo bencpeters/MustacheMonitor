@@ -80,6 +80,10 @@ function createGif(params, callback) {
         var errMsg = 'Not enough images for an animation';
         callback.call(errMsg, errMsg);
     }
+    if (sequence.length > 30) {
+        var errMsg = 'Too many images (more than 30) for an animation';
+        callback.call(errMsg, errMsg);
+    }
     tempFS.mkdir('tmp', function(err, dirPath) {
         if (err) { return callback.call(err, err); }
         var numImgsSaved = 0;
