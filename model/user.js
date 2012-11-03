@@ -228,7 +228,7 @@ function deleteImage(user, hash, callback) {
 }
 
 function getUserByScreenName(user, callback) {
-    db.collection('users').findOne({"screenName": user}, function(err, res) {
+    db.collection('users').findOne({"screenName": user}, {'password': 0}, function(err, res) {
         if( err ) return callback.call(err, err);
         if( res ) return callback.call( res, null, res);
 
