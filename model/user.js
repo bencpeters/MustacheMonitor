@@ -151,13 +151,13 @@ function validateUser(user, callback) {
 }
 
 function checkImage(user, hash, callback) {
-    db.collection('users').findOne({"screenName": user},{"sequences.gif": 1}, function(err, res) {
+    db.collection('users').findOne({"screenName": user},{"sequences": 1}, function(err, res) {
         if (err) { return callback.call(err, err); }
         if( res.sequences[0] && res.sequences[0].gif === hash ){
             return callback.call( hash, null, hash );
         }
         if ( res.sequences[0] && typeof res.sequences[0].sequence !== 'undefined' &&
-            res.sequences[0].sequence.indexOf(hash) > 0) {
+            res.sequences[0].sequence.indexOf(hash) >= 0) {
             return callback.call( hash, null, hash);
         }
 
