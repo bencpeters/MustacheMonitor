@@ -66,7 +66,7 @@ function saveImage(user, image, callback){
 }
 
 function deleteImage(imageID, callback){
-    var id = newObjectId(imageID);
+    var id = new ObjectId(imageID);
     var theImage = new gsFile(db, id, 'w');
     theImage.unlink(function (err, res) {
         if (err) { return callback.call(err, err); }
