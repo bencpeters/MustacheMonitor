@@ -107,6 +107,11 @@ function getSequence(req, res, next) {
             seq = [];
         } else {
             seq = seq.sequence;
+            var newSeq = new Array();
+            for (var i=0; i < seq.length; ++i) {
+                newSeq.push({id: seq[i]}); 
+            }
+            seq = newSeq;
         }
         res.contentType('application/json');
         res.send(seq);
