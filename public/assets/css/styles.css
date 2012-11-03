@@ -8,7 +8,7 @@ header{
 	background:#fff;
  }
 header h1{
-	font-family: 'Fredoka One', cursive;/*'Lato', sans-serif;*/
+	font-family: 'Fredoka One', cursive;
 	font-size:36px;
 	margin-top: 20px;
 }
@@ -28,6 +28,14 @@ header h1 a .icon{
 
 }
 
+#content h1{
+	font-family: 'Fredoka One', cursive;
+	font-size: 26px;
+	margin-bottom: 0
+}
+#content h1 small{
+	font-size: 70%
+}
 #animation{
 	text-align: center
 }
@@ -52,6 +60,11 @@ footer{
 	padding-bottom: 40px;
 	
 }
+
+footer h3{
+	font-family: 'Fredoka One', cursive;
+}
+
 #columns{
 	
 }
@@ -83,6 +96,8 @@ footer{
 .pull-img-right{ float:right; margin:0 0 15px 15px }
 hr.thick{ border-top:7px solid #444; }
 
+#home-thumbs .thumbnail img{ width: 300px }
+
 /* Media Queries */
 @media (max-width: 980px) {
 
@@ -105,6 +120,16 @@ hr.thick{ border-top:7px solid #444; }
 		padding-top:15px
 	}
 	.thumbnail{ text-align: center; border:0 }
+
+	#animation-buttons{
+		text-align: center
+	}
+	#animation-buttons .pull-right{ 
+		float: none
+	}
+	.page-header{
+		padding:0 10px
+	}
 }
 @media (max-width: 480px) {
 	
@@ -112,4 +137,5 @@ hr.thick{ border-top:7px solid #444; }
 		font-size:24px;
 		padding-top:15px
 	}
+
 }

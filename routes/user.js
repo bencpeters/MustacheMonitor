@@ -54,8 +54,16 @@ function getAnimation(req, res, next){
 	req.app.locals.userAPI.checkImageOwnership( req.params.screenName, req.params.gifHash, function( err, hash ){
 		if ( err ) return next();
 		var url = 'http://' + req.headers.host + req.url;
-		console.log(url);
-        res.render("user-animation", {title: "Content", url: url });
+		var gifUrl = url + '/gif';
+		console.log(gifUrl);
+		
+		req.app.locals.userAPI.getUserByScreenName(req.params.screenName,function( err, user ){
+			var email = user.email.toLowerCase();
+			var emailHash = require('crypto').createHash('md5').update(email).digest("hex");
+
+        	res.render("user-animation", {title: "Content", url: url, gifUrl: gifUrl, screenName: req.params.screenName, emailHash: emailHash });
+		});
+
 	});
 }
 
