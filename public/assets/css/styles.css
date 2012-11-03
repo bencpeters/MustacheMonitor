@@ -85,12 +85,12 @@ hr.thick{ border-top:7px solid #444; }
 }
 @media (max-width: 767px) {
 	#content-wrapper{
-		background-image: none;
+		background-image: none !important;
 	}
 	header h1{
 		padding-top:15px
 	}
-
+	.thumbnail{ text-align: center; border:0 }
 }
 @media (max-width: 480px) {
 	
