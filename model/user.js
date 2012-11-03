@@ -16,7 +16,6 @@ exports.checkImageOwnership = checkImage;
 exports.getUserByScreenName = getUserByScreenName;
 exports.deleteImageFromUser = deleteImage;
 
-
 function setDb(database) {
     db = database;
 }
@@ -223,4 +222,15 @@ function deleteImage(user, hash, callback) {
             });
         }
     });
+}
+
+function getUserByScreenName(user, callback) {
+    db.collection('users').findOne({"screenName": user}, function(err, res) {
+        if( err ) return callback.call(err, err);
+        if( res ) return callback.call( res, null, res);
+
+        var errMsg = 'Error, not found';
+        return callback.call(errMsg, errMsg);
+    });
+
 }

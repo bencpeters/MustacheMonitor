@@ -127,9 +127,11 @@ hr.thick{ border-top:7px solid #444; }
 	#animation-buttons .pull-right{ 
 		float: none
 	}
+
 	.page-header{
 		padding:0 10px
 	}
+
 }
 @media (max-width: 480px) {
 	
