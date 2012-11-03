@@ -35,6 +35,16 @@ hbs.registerHelper('printError', function(items, options) {
     return out;
 });
 
+hbs.registerHelper('userAnimations', function(user, options) {
+    var out = "";
+    var items = user.animations;
+    for(var i=0; i < items.length; i++) {
+        out = out + '<a href="/user/'+user.screenName+'/'+items[i].gif+'/" title="'+items[i].title+'"><img src="/user/'+user.screenName+'/'+items[i].gif+'/gif" width="150" alt=""/></a>';
+    }
+    return out;
+});
+
+
 hbs.registerHelper('loggedIn', function(item, options) {
     return this.loggedIn;
 });
@@ -96,6 +106,7 @@ app.post('/user/addimage', session.requiresLogin, user.addImage);
 app.post('/user/setsequence', session.requiresLogin, user.setSequence);
 app.get('/user/generate', session.requiresLogin, user.generateGifFromSequence);
 app.post('/user/generate', session.requiresLogin, user.generateGif);
+app.get('/user/:screenName', user.getUserPage );
 app.get('/user/:screenName/:gifHash', user.getAnimationPage );
 app.get('/user/:screenName/:gifHash/gif', user.getGif);
 

@@ -18,6 +18,7 @@ exports.generateGif = generateGif;
 exports.generateGifFromSequence = generateGifFromSequence;
 exports.getAnimationPage = getAnimation;
 exports.getGif = getGif;
+exports.getUserPage = getUserPage;
 
 exports.index = function(req, res){
   var _user = req.session.user;
@@ -50,6 +51,21 @@ exports.create = function(req, res, next) {
 }
 
 // Functions
+function getUserPage(req, res, next){
+
+	req.app.locals.userAPI.getUserByScreenName(req.params.screenName,function( err, user ){
+
+		if( user ){
+			delete user._id;
+			delete user.password;
+
+			res.render('user-public',{ title: user.screenName, user: user });
+		} else next();
+
+	});
+}
+
+
 function getAnimation(req, res, next){
 	req.app.locals.userAPI.checkImageOwnership( req.params.screenName, req.params.gifHash, function( err, hash ){
 		if ( err ) return next();
