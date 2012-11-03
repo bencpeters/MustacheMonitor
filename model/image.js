@@ -33,7 +33,7 @@ function getImage(imageID, callback){
 }
 
 function saveImage(user, image, callback){
-    var saveGif
+    var saveGif;
     if (user.hasOwnProperty('saveGif')) {
         saveGif = user.saveGif;
     } else {
@@ -51,6 +51,7 @@ function saveImage(user, image, callback){
             }
             user.api.addImageToUser({imageId : id.toString(), 
                 userId: user.id,
+                sequence: user.sequence,
                 saveGif: saveGif}, function(err,res) {
                 if (err) { 
                     exports.deleteImage(id, function(newErr, res) {

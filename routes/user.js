@@ -11,6 +11,8 @@ exports.login = userLogin;
 exports.processLogin = userLogin;
 exports.logout = userLogout;
 exports.getSequence = getSequence;
+exports.getImages = getImages;
+exports.getAnimations = getAnimations;
 exports.addImage = addImageToSequence;
 exports.generateGif = generateGif;
 exports.generateGifFromSequence = generateGifFromSequence;
@@ -100,25 +102,59 @@ function userLogin(req, res, next){
 };
 
 function getSequence(req, res, next) {
-    req.app.locals.userAPI.getUserSequence(req.session.user._id,
-        function(err, seq) {
-        if (err) {
-            return res.send(err, 500);
-        }
-        if (typeof seq === 'undefined') {
-            seq = [];
-        } else {
-            seq = seq.sequence;
-            var newSeq = new Array();
-            for (var i=0; i < seq.length; ++i) {
-                newSeq.push({id: seq[i]}); 
+    req.app.locals.userAPI.checkImageOwnership(req.session.user.screenName,
+        req.params.gifHash, function(err, hash) {
+        if (err) { return res.send(err, 500); }
+        req.app.locals.userAPI.getUserGifs(req.session.user._id,
+            function(err, images) {
+            if (err) { return res.send(err, 500); }
+            var theSequence = null;
+            for(var i=0; i < images.length; ++i) {
+                if (images[i].gif === hash) {
+                   theSequence = images[i];
+                   break;
+                }
             }
-            seq = newSeq;
+            if (theSequence) {
+                for(var i=0; i < theSequence.sequence.length; ++i) {
+                    theSequence.sequence[i] = {id:
+                        theSequence.sequence[i]};
+                }
+                res.contentType('application/json');
+                return res.send(theSequence.sequence);
+            } else {
+                return res.send('Animation not found', 404);
+            }
+        });
+    });
+}
+
+function getImages(req, res, next) {
+    req.app.locals.userAPI.getUserImages(req.session.user._id,
+        function(err, images) {
+        if (err) { return res.send(err, 500); }
+        if (typeof images === 'undefined') {
+            return next();
+        }
+        for (var i=0; i < images.length; ++i) {
+            images[i] = {id: images[i]};
         }
         res.contentType('application/json');
-        res.send(seq);
+        res.send(images);
     });
-};
+}
+
+function getAnimations(req, res, next) {
+    req.app.locals.userAPI.getUserGifs(req.session.user._id,
+        function(err, images) {
+        if (typeof images === 'undefined') {
+            return next();
+        }
+        if (err) { return res.send(err, 500); }
+        res.contentType('application/json');
+        res.send(images);
+    });
+}
 
 function addImageToSequence(req, res, next) {
     req.app.locals.userAPI.addImageToUserSequence(req.body.imageId,
@@ -140,9 +176,9 @@ function generateGif(req, res, next) {
 }
 
 function generateGifFromSequence(req, res, next) {
-    req.app.locals.userAPI.getUserSequence(req.session.user._id, function(err, result) {
+    req.app.locals.userAPI.getUserImages(req.session.user._id, function(err, result) {
         if (err) { return res.send(err, 500); }
-        req.app.locals.imagesAPI.createGif({sequence: result.sequence,
+        req.app.locals.imagesAPI.createGif({sequence: result,
             api: req.app.locals.userAPI,
             id: req.session.user._id }, function(err, result) {
             if (err) { return res.send(err, 500); }

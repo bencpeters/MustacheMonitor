@@ -8,7 +8,8 @@ exports.setDb = setDb;
 exports.createUser = createUser;
 exports.deleteUser = deleteUser;
 exports.authenticateUser = authenticateUser;
-exports.getUserSequence = userSequence;
+exports.getUserGifs = userGifs;
+exports.getUserImages = userImages;
 exports.addImageToUser = addImageToUser;
 exports.checkImageOwnership = checkImage;
 
@@ -49,11 +50,26 @@ function authenticateUser(user, pw, callback) {
 
 }
 
-function userSequence(user, callback) {
+function getImagesByUser(user, callback) {
     var id = new ObjectId(user);
-    db.collection('users').findById(id, {sequences: true, _id: 0}, function(err, res) {
+    db.collection('users').findById(id, {images: 1, animations: 1, 
+        _id: 0}, function(err, res) {
         if (err) { return callback.call(err, err); }
-        return callback.call(res.sequences[0], null, res.sequences[0]);
+        return callback.call(res, null, res);
+    });
+}
+
+function userImages (user, callback) {
+    getImagesByUser(user, function(err, res) {
+        if (err) { return callback.call(err, err); }
+        return callback.call(res.images, null, res.images);
+    });
+}
+
+function userGifs (user, callback) {
+    getImagesByUser(user, function(err, res) {
+        if (err) { return callback.call(err, err); }
+        return callback.call(res.animations, null, res.animations);
     });
 }
 
@@ -61,21 +77,17 @@ function addImageToUser(params, callback) {
     var imageID = params.imageId;
     var user = params.userId;
     var saveGif = params.saveGif;
-    userSequence(user, function(err, res) {
+    getImagesByUser(user, function(err, res) {
         if (err) { return callback.call(err, err); }
-        var gifId = null;
-        var sequence = new Array();
-        if (typeof res !== 'undefined') {
-            gifId = res.gif;
-            sequence = res.sequence;
-        }
         if (saveGif) {
-            gifId = imageID;
+            res.animations.push({gif: imageID,
+                sequence: params.sequence});
         } else {
-            sequence.push(imageID);
+            res.images.push(imageID);
         }
-        db.collection('users').updateById(user, {$set : { 'sequences' :
-            [{ gif : gifId, sequence : sequence}]}}, function(err, res) {
+
+        db.collection('users').updateById(user, {$set : { 'animations' :
+            res.animations, 'images' : res.images}}, function(err, res) {
             if (err) { return callback.call(err, err); }
             return callback.call(res, null, res);
         });
@@ -124,6 +136,8 @@ function validateUser(user, callback) {
         userObj['screenName'] = userObj.email;
     } else if (user.screenName.length > 0) {
         userObj['screenName'] = user.screenName;
+    } else {
+        errors.push({msg: 'Need to specifiy a screen name'});
     }
 
     if (errors.length === 0) {
@@ -140,7 +154,8 @@ function validateUser(user, callback) {
                 if (errors.length > 0) {
                     return callback.call(errors, errors);
                 } else {
-                    userObj['sequences'] = new Array();
+                    userObj['images'] = new Array();
+                    userObj['animations'] = new Array();
                     return callback.call(userObj, null, userObj);
                 }
             });
@@ -151,18 +166,24 @@ function validateUser(user, callback) {
 }
 
 function checkImage(user, hash, callback) {
-    db.collection('users').findOne({"screenName": user},{"sequences": 1}, function(err, res) {
+    db.collection('users').findOne({"screenName": user},{"images": 1,
+        "animations": 1}, function(err, res) {
         if (err) { return callback.call(err, err); }
-        if( res.sequences[0] && res.sequences[0].gif === hash ){
-            return callback.call( hash, null, hash );
+        if (typeof res.images === 'undefined' ||
+            typeof res.animations === 'undefined') {
+            var errMsg = 'Old DB';
+            return callback.call(errMsg, errMsg);
         }
-        if ( res.sequences[0] && typeof res.sequences[0].sequence !== 'undefined' &&
-            res.sequences[0].sequence.indexOf(hash) >= 0) {
-            return callback.call( hash, null, hash);
+        if (res.images.indexOf(hash) >= 0) {
+            return callback.call(hash, null, hash);
         }
-
+        for(var i=0; i < res.animations.length; ++i) {
+            if (res.animations[i].gif === hash) {
+                return callback.call(hash, null, hash);
+            }
+        }
         var errMsg = 'Invalid Hash';
         return callback.call(errMsg, errMsg);
     });
-
 }
+
