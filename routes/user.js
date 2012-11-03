@@ -56,7 +56,7 @@ function getAnimation(req, res, next){
 }
 
 function getGif(req, res, next) {
-    req.app.locals.userAPI.checkGifHash(req.params.screenName, req.params.gifHash, function(err, hash) {
+    req.app.locals.userAPI.checkImageOwnership(req.params.screenName, req.params.gifHash, function(err, hash) {
         if (err) { return next(); }
         req.app.locals.imagesAPI.getImage(hash, function(err, data) {
             if (err) { return next(); }

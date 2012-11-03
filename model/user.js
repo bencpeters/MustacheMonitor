@@ -156,7 +156,7 @@ function checkImage(user, hash, callback) {
         if( res.sequences[0] && res.sequences[0].gif === hash ){
             return callback.call( hash, null, hash );
         }
-        if ( res.sequences[0] &&
+        if ( res.sequences[0] && typeof res.sequences[0].sequence !== 'undefined' &&
             res.sequences[0].sequence.indexOf(hash) > 0) {
             return callback.call( hash, null, hash);
         }
