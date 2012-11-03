@@ -42,17 +42,22 @@ footer{
 	
 }
 #team-stache h3{
-	color: #fff;
-	text-shadow:0 1px 0 #000;
+	/*color: #fff;*/
+	margin-top: 0;
+	padding-top: 0;
+	text-shadow:0 1px 0 #fff;
+}
+#team-stache a{
+	
 }
 #footer-content{
 	margin-top: 20px
 }
-footer a{
+#footer-content a{
 	color: #fff
 }
-footer a:hover,
-footer a:focus{
+#footer-content a:hover,
+#footer-content a:focus{
 	color: #000
 }
 
