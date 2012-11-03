@@ -1,11 +1,15 @@
 var db
   , gsFile = require('mongoskin').GridStore
-  , ObjectId = require('mongoskin').ObjectID;
+  , ObjectId = require('mongoskin').ObjectID
+  , tempFS = require('temp')
+  , path = require('path')
+  , fs = require('fs');
 
 exports.setDb = setDb;
 exports.getImage = getImage;
 exports.saveImage = saveImage;
 exports.deleteImage = deleteImage;
+exports.createGif = createGif;
 
 function setDb(database) {
     db = database.db;
@@ -59,3 +63,46 @@ function deleteImage(imageID, callback){
         return callback.call(imageID, null, imageID);
     });
 }
+
+function createGif(params, callback) {
+    var userAPI = params.api;
+    var sequence = params.sequence;
+    if (!sequence.length || sequence.length < 2) {
+        var errMsg = 'Not enough images for an animation';
+        callback.call(errMsg, errMsg);
+    }
+    tempFS.mkdir('tmp', function(err, dirPath) {
+        console.log('temp directory created at: ' + dirPath);
+        if (err) { return callback.call(err, err); }
+        var numImgsSaved = 0;
+        for (var i=0; i < sequence.length; ++i) {
+            (function(numCalled) {
+                exports.getImage(sequence[numCalled], function(err, img) {
+                    if (err) {
+                        errMsg = 'Problem saving temp file';
+                        numImgsSaved = -50;
+                        return callback.call(errMsg, errMsg);
+                    }
+                    var filePath = path.join(dirPath, 'img' + numCalled + '.jpg');
+                    console.log('filepath: ' + filePath);
+                    fs.writeFile(filePath, img, function(err) {
+                        if (err) {
+                            console.log('problem creating file ' + filePath);
+                            numImgsSaved = -50;
+                            return callback.call(errMsg, errMsg);
+                        }
+                        console.log(filePath + ' created!');
+                        if (++numImgsSaved === sequence.length) {
+                             return makeGif(dirPath,callback);
+                        }
+                    });
+                });
+            })(i);
+        }
+    });
+}
+
+function makeGif(tempDir, callback) {
+    console.log('should probably make some gifs now!');
+}
+

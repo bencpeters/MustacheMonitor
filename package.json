@@ -14,6 +14,9 @@
     , "imagemagick" : "*"
     , "connect" : "*"
     , "password-hash" : "*"
+    , "temp" : "*"
+    , "fs" : "*"
+    , "path" : "*"
   }
   , "devDependencies": {
           "supertest": "0.4.0"

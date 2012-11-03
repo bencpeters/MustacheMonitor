@@ -65,13 +65,14 @@ app.get('/images/:imageId', session.requiresLogin, routes.viewImage);
 app.get('/user', session.requiresLogin, user.index );
 app.get('/user/create', user.createPage);
 app.post('/user/create', user.create);
-app.get('/user/edit/:userId', session.requiresLogin, user.edit);
+app.get('/user/edit', session.requiresLogin, user.edit);
 app.get('/user/login', user.login );
 app.post('/user/login', user.processLogin );
 app.get('/user/logout', user.logout );
 app.post('/user/sequence', session.requiresLogin, user.getSequence);
 app.post('/user/addimage', session.requiresLogin, user.addImage);
 app.post('/user/setsequence', session.requiresLogin, user.setSequence);
+app.get('/user/generate', session.requiresLogin, user.generateGifFromSequence);
 app.post('/user/generate', session.requiresLogin, user.generateGif);
 
 // session routes

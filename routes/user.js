@@ -12,6 +12,8 @@ exports.processLogin = userLogin;
 exports.logout = userLogout;
 exports.getSequence = getSequence;
 exports.addImage = addImageToSequence;
+exports.generateGif = generateGif;
+exports.generateGifFromSequence = generateGifFromSequence;
 
 exports.index = function(req, res){
   var _user = req.session.user;
@@ -38,7 +40,7 @@ exports.create = function(req, res, next) {
             req.session.errors = err;
             return res.redirect('/user/create');
         }
-        return res.redirect('/user/' + user._id);
+        return res.redirect('/user/');
     });
 }
 
@@ -94,3 +96,22 @@ function addImageToSequence(req, res, next) {
         res.send(seq);
     });
 };
+
+function generateGif(req, res, next) {
+    req.app.locals.imagesAPI.createGif({sequence: req.body.sequence,
+        api: req.app.locals.userAPI}, function(err, res) {
+        if (err) { res.send(err, 500); }
+        res.send(res);
+    });
+}
+
+function generateGifFromSequence(req, res, next) {
+    req.app.locals.userAPI.getUserSequence(req.session.user._id, function(err, result) {
+        if (err) { res.send(err, 500); }
+        req.app.locals.imagesAPI.createGif({sequence: result.sequence,
+            api: req.app.locals.userAPI}, function(err, result) {
+            if (err) { res.send(err, 500); }
+            res.send(result);
+        });
+    });
+}
