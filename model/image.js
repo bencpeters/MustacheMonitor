@@ -42,7 +42,7 @@ function saveImage(user, image, callback){
             if (err) {
                 return callback.call(err, err);
             }
-            user.api.addImageToUserSequence(id, user.id, function(err,res) {
+            user.api.addImageToUserSequence(id.toString(), user.id, function(err,res) {
                 if (err) { 
                     exports.deleteImage(id, function(newErr, res) {
                         if (err) { return callback.call(newErr, newErr); }
