@@ -81,7 +81,7 @@ app.get('/session', session.index );
 app.get('/session/create', session.create );
 
 //upload routes
-app.get('/upload', upload.uploadPage);
+app.get('/upload', session.requiresLogin, upload.uploadPage);
 app.post('/upload', session.requiresLogin, upload.uploadImage);
 
 http.createServer(app).listen(app.get('port'), function(){
