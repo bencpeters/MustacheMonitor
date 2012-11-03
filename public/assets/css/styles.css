@@ -28,6 +28,20 @@ header h1 a .icon{
 
 }
 
+#animation{
+	text-align: center
+}
+
+#ads{
+	text-align: center
+}
+#ads img{
+	display: block;
+	text-align: center;
+	margin:0 auto;
+	margin-bottom: 10px
+}
+
 #apple-app-download{
 	display: block
 }

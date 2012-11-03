@@ -51,7 +51,9 @@ exports.create = function(req, res, next) {
 function getAnimation(req, res, next){
 	req.app.locals.userAPI.checkImageOwnership( req.params.screenName, req.params.gifHash, function( err, hash ){
 		if ( err ) return next();
-        res.render("user-animation");
+		var url = 'http://' + req.headers.host + req.url;
+		console.log(url);
+        res.render("user-animation", {title: "Content", url: url });
 	});
 }
 
