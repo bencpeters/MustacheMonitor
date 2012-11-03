@@ -41,7 +41,8 @@ exports.create = function(req, res, next) {
             req.session.errors = err;
             return res.redirect('/user/create');
         }
-        return res.redirect('/user/');
+        req.session.user = user;
+        return res.redirect('/user');
     });
 }
 
@@ -99,6 +100,7 @@ function userLogin(req, res, next){
 };
 
 function getSequence(req, res, next) {
+    console.log('in sequence');
     req.app.locals.userAPI.getUserSequence(req.session.user._id,
         function(err, seq) {
         if (err) {
