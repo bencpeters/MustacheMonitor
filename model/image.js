@@ -3,7 +3,8 @@ var db
   , ObjectId = require('mongoskin').ObjectID
   , tempFS = require('temp')
   , path = require('path')
-  , fs = require('fs');
+  , fs = require('fs')
+  , im = require('imagemagick');
 
 exports.setDb = setDb;
 exports.getImage = getImage;
@@ -103,6 +104,26 @@ function createGif(params, callback) {
 }
 
 function makeGif(tempDir, callback) {
-    console.log('should probably make some gifs now!');
+    
+    var gifPath = path.join(tempDir, 'output.gif');
+    var imgSeq = path.join( tempDir, 'img*.jpg');
+
+    console.log(tempDir);
+    console.log(imgSeq);
+    console.log(gifPath);
+
+    // Animated GIF
+    im.convert(
+        ['-delay', '1/1', '-loop', '0', imgSeq, gifPath], 
+        // convert -delay 20 -loop 0 input*.gif output.gif // Delay, no loop
+        function(err, stdout){
+            if (err) return callback.call( null, err );
+            console.log('stdout:', stdout);
+
+            return callback.call( null, "GIF BABY");
+        }
+    );
+   
+    // return callback.call( null, "Some err");
 }
 
