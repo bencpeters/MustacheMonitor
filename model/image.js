@@ -75,12 +75,12 @@ function deleteImage(imageID, callback){
 
 function createGif(params, callback) {
     var sequence = params.sequence;
-    if (!sequence.length || sequence.length < 2) {
+    console.log(sequence);
+    if (typeof sequence === 'undefined' || sequence.length < 2) {
         var errMsg = 'Not enough images for an animation';
         callback.call(errMsg, errMsg);
     }
     tempFS.mkdir('tmp', function(err, dirPath) {
-        console.log('temp directory created at: ' + dirPath);
         if (err) { return callback.call(err, err); }
         var numImgsSaved = 0;
         for (var i=0; i < sequence.length; ++i) {
@@ -92,14 +92,11 @@ function createGif(params, callback) {
                         return callback.call(errMsg, errMsg);
                     }
                     var filePath = path.join(dirPath, 'img' + numCalled + '.jpg');
-                    console.log('filepath: ' + filePath);
                     fs.writeFile(filePath, img, function(err) {
                         if (err) {
-                            console.log('problem creating file ' + filePath);
                             numImgsSaved = -50;
                             return callback.call(errMsg, errMsg);
                         }
-                        console.log(filePath + ' created!');
                         if (++numImgsSaved === sequence.length) {
                              return makeGif(params, dirPath,callback);
                         }
@@ -114,10 +111,6 @@ function makeGif(params, tempDir, callback) {
     var gifPath = path.join(tempDir, 'output.gif');
     var imgSeq = path.join( tempDir, 'img*.jpg');
     params.saveGif = true;
-
-    console.log(tempDir);
-    console.log(imgSeq);
-    console.log(gifPath);
 
     // Animated GIF
     im.convert(
