@@ -97,7 +97,7 @@ app.post('/user/setsequence', session.requiresLogin, user.setSequence);
 app.get('/user/generate', session.requiresLogin, user.generateGifFromSequence);
 app.post('/user/generate', session.requiresLogin, user.generateGif);
 app.get('/user/:screenName/:gifHash', user.getAnimationPage );
-app.get('/user/:screenName/gif/:gifHash', user.getGif);
+app.get('/user/:screenName/:gifHash/gif', user.getGif);
 
 // session routes
 app.get('/session', session.index );

@@ -2,6 +2,7 @@ var db
   , ObjectId = require('mongoskin').ObjectID;
 
 var pwHash = require('password-hash');
+// var crypto = require('crypto');
 
 exports.setDb = setDb;
 
@@ -12,6 +13,7 @@ exports.getUserGifs = userGifs;
 exports.getUserImages = userImages;
 exports.addImageToUser = addImageToUser;
 exports.checkImageOwnership = checkImage;
+exports.getUserByScreenName = getUserByScreenName;
 exports.deleteImageFromUser = deleteImage;
 
 function setDb(database) {
@@ -169,7 +171,7 @@ function checkImage(user, hash, callback) {
     db.collection('users').findOne({"screenName": user},{"images": 1,
         "animations": 1}, function(err, res) {
         if (err) { return callback.call(err, err); }
-        if (typeof res.images === 'undefined' ||
+        if (res === null || typeof res.images === 'undefined' ||
             typeof res.animations === 'undefined') {
             var errMsg = 'Old DB';
             return callback.call(errMsg, errMsg);
@@ -185,6 +187,17 @@ function checkImage(user, hash, callback) {
         var errMsg = 'Invalid Hash';
         return callback.call(errMsg, errMsg);
     });
+}
+
+function getUserByScreenName(user, callback) {
+    db.collection('users').findOne({"screenName": user}, function(err, res) {
+        if( err ) { return callback.call(err, err); }
+        if( res ) return callback.call( res, null, res);
+
+        var errMsg = 'Error, not found';
+        return callback.call(errMsg, errMsg);
+    });
+
 }
 
 function deleteImage(user, hash, callback) {
@@ -209,4 +222,15 @@ function deleteImage(user, hash, callback) {
             });
         }
     });
+}
+
+function getUserByScreenName(user, callback) {
+    db.collection('users').findOne({"screenName": user}, function(err, res) {
+        if( err ) return callback.call(err, err);
+        if( res ) return callback.call( res, null, res);
+
+        var errMsg = 'Error, not found';
+        return callback.call(errMsg, errMsg);
+    });
+
 }
