@@ -70,8 +70,8 @@ function getAnimation(req, res, next){
 		if ( err ) return next();
 		var url = 'http://' + req.headers.host + req.url;
 		var gifUrl = 'http://' + require('path').join( req.headers.host, req.url, 'gif');
-		console.log(gifUrl);
-		var gifTitle = 'My Awesome Stache';
+
+		var gifTitle = this.title;
 
 		req.app.locals.userAPI.getUserByScreenName(req.params.screenName,function( err, user ){
 			var email = user.email.toLowerCase();

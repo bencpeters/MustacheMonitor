@@ -184,7 +184,7 @@ function checkImage(user, hash, callback) {
         }
         for(var i=0; i < res.animations.length; ++i) {
             if (res.animations[i].gif === hash) {
-                return callback.call(hash, null, hash);
+                return callback.call(res.animations[i], null, hash);
             }
         }
         var errMsg = 'Invalid Hash';
