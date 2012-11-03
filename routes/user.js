@@ -104,6 +104,7 @@ function getSequence(req, res, next) {
         if (err) {
             return res.send(err, 500);
         }
+        console.log(seq);
         if (!seq.length || seq.length < 1) {
             seq = [];
         } else {
