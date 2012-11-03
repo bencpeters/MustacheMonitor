@@ -73,11 +73,12 @@ function getAnimation(req, res, next){
 		var url = 'http://' + req.headers.host + req.url;
 		var gifUrl = 'http://' + require('path').join( req.headers.host, req.url, 'gif');
 		console.log(gifUrl);
-		
+		var gifTitle = 'My Awesome Stache';
+
 		req.app.locals.userAPI.getUserByScreenName(req.params.screenName,function( err, user ){
 			var email = user.email.toLowerCase();
 			var emailHash = require('crypto').createHash('md5').update(email).digest("hex");
-        	res.render("user-animation", {title: "Content", url: url, gifUrl: gifUrl, screenName: req.params.screenName, emailHash: emailHash });
+        	res.render("user-animation", {title: gifTitle, gifTitle: gifTitle, url: url, gifUrl: gifUrl, screenName: req.params.screenName, emailHash: emailHash });
 
 		});
 
