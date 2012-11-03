@@ -11,6 +11,7 @@ exports.login = userLogin;
 exports.processLogin = userLogin;
 exports.logout = userLogout;
 exports.getSequence = getSequence;
+exports.addImage = addImageToSequence;
 
 exports.index = function(req, res){
   var _user = req.session.user;
@@ -72,12 +73,23 @@ function userLogin(req, res, next){
 };
 
 function getSequence(req, res, next) {
-    req.app.locals.userAPI.getUserSequence(req.params.userId,
+    req.app.locals.userAPI.getUserSequence(req.session.user._id,
         function(err, seq) {
         if (err) {
-            return res.send(err);
+            return res.send(err, 500);
         }
         res.contentType('application/json');
+        res.send(seq);
+    });
+};
+
+function addImageToSequence(req, res, next) {
+    //req.app.locals.userAPI.addImageToUserSequence(req.body.imageId,
+    req.app.locals.userAPI.addImageToUserSequence(req.params.imageId,
+        req.session.user._id, function(err, seq) {
+        if (err) {
+            return res.send(err, 500);
+        }
         res.send(seq);
     });
 };

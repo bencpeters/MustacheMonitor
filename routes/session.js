@@ -13,8 +13,9 @@ exports.create = function(req, res){
 };
 
 function requiresLogin( req, res, next ){
-console.log('requires login');	
-	if( req.session.user ){
+    var specifiedUserId = req.params.userId;
+	if( req.session.user && (typeof specifiedUserId === 'undefined' ||
+        specifiedUserId === req.session.user._id)){
 		next();
 	} else {
         req.session.prev = req.url;

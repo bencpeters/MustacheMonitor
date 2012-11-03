@@ -65,19 +65,22 @@ app.get('/images/:imageId', routes.viewImage);
 app.get('/user', session.requiresLogin, user.index );
 app.get('/user/create', user.createPage);
 app.post('/user/create', user.create);
-app.get('/user/edit/:userId', user.edit);
+app.get('/user/edit/:userId', session.requiresLogin, user.edit);
 app.get('/user/login', user.login );
 app.post('/user/login', user.processLogin );
 app.get('/user/logout', user.logout );
-app.post('/user/:userId/sequence', session.requiresLogin, user.getSequence);
+app.post('/user/sequence', session.requiresLogin, user.getSequence);
+app.post('/user/addimage', session.requiresLogin, user.addImage);
+app.post('/user/setsequence', session.requiresLogin, user.setSequence);
+app.post('/user/generate', session.requiresLogin, user.generateGif);
 
 // session routes
 app.get('/session', session.index );
 app.get('/session/create', session.create );
 
 //upload routes
-app.get('/upload', imagesAPI, upload.uploadPage);
-app.post('/upload', imagesAPI, upload.uploadImage);
+app.get('/upload', upload.uploadPage);
+app.post('/upload', upload.uploadImage);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));

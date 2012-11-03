@@ -9,6 +9,7 @@ exports.createUser = createUser;
 exports.deleteUser = deleteUser;
 exports.authenticateUser = authenticateUser;
 exports.getUserSequence = userSequence;
+exports.addImageToUserSequence = addImageToUserSequence;
 
 function setDb(database) {
     db = database;
@@ -52,6 +53,25 @@ function userSequence(user, callback) {
     db.collection('users').findById(id, {sequences: true, _id: 0}, function(err, res) {
         if (err) { return callback.call(err, err); }
         return callback.call(res.sequences[0], null, res.sequences[0]);
+    });
+}
+
+function addImageToUserSequence(imageID, user, callback) {
+    userSequence(user, function(err, res) {
+        if (err) { return callback.call(err, err); }
+        var gifId = null;
+        var sequence = new Array();
+        console.log(res);
+        if (typeof res !== 'undefined') {
+            gifId = res.gif;
+            sequence = res.sequence;
+        }
+        sequence.push(imageID);
+        db.collection('users').updateById(user, {$set : { 'sequences' :
+            [{ gif : gifId, sequence : sequence}]}}, function(err, res) {
+            if (err) { return callback.call(err, err); }
+            return callback.call(res, null, res);
+        });
     });
 }
 
