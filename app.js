@@ -59,7 +59,7 @@ app.configure('development', function(){
 });
 
 app.get('/', routes.index);
-app.get('/images/:imageId', routes.viewImage);
+app.get('/images/:imageId', session.requiresLogin, routes.viewImage);
 
 // user routes
 app.get('/user', session.requiresLogin, user.index );

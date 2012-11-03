@@ -56,7 +56,7 @@ function userLogin(req, res, next){
 	if( req.session.user ) res.redirect("/user");
 
 	if( req.body.password && req.body.password.length ){
-        req.app.locals.userAPI.authenticateUser(req.body.username,
+        req.app.locals.userAPI.authenticateUser(req.body.screenName,
             req.body.password, function(err, user) {
 			if( user ){
                 var url = req.session.prev ? req.session.prev : '/user';
@@ -84,8 +84,7 @@ function getSequence(req, res, next) {
 };
 
 function addImageToSequence(req, res, next) {
-    //req.app.locals.userAPI.addImageToUserSequence(req.body.imageId,
-    req.app.locals.userAPI.addImageToUserSequence(req.params.imageId,
+    req.app.locals.userAPI.addImageToUserSequence(req.body.imageId,
         req.session.user._id, function(err, seq) {
         if (err) {
             return res.send(err, 500);
