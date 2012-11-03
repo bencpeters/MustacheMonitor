@@ -59,7 +59,7 @@ app.configure('development', function(){
 });
 
 app.get('/', routes.index);
-app.get('/images/:imageId', routes.viewImage);
+app.get('/images/:imageId', session.requiresLogin, routes.viewImage);
 
 // user routes
 app.get('/user', session.requiresLogin, user.index );
@@ -80,7 +80,7 @@ app.get('/session/create', session.create );
 
 //upload routes
 app.get('/upload', upload.uploadPage);
-app.post('/upload', upload.uploadImage);
+app.post('/upload', session.requiresLogin, upload.uploadImage);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
