@@ -10,6 +10,7 @@ exports.deleteUser = deleteUser;
 exports.authenticateUser = authenticateUser;
 exports.getUserSequence = userSequence;
 exports.addImageToUser = addImageToUser;
+exports.checkImageOwnership = checkImage;
 
 function setDb(database) {
     db = database;
@@ -149,17 +150,19 @@ function validateUser(user, callback) {
     }
 }
 
-exports.checkGifHash = function (user, hash, callback) {
-    
+function checkImage(user, hash, callback) {
     db.collection('users').findOne({"screenName": user},{"sequences.gif": 1}, function(err, res) {
-        
         if (err) { return callback.call(err, err); }
-
         if( res.sequences[0] && res.sequences[0].gif === hash ){
             return callback.call( hash, null, hash );
         }
+        if ( res.sequences[0] &&
+            res.sequences[0].sequence.indexOf(hash) > 0) {
+            return callback.call( hash, null, hash);
+        }
 
-        return callback.call(err, 'Invalid hash');
+        var errMsg = 'Invalid Hash';
+        return callback.call(errMsg, errMsg);
     });
 
 }

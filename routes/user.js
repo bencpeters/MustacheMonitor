@@ -49,7 +49,7 @@ exports.create = function(req, res, next) {
 
 // Functions
 function getAnimation(req, res, next){
-	req.app.locals.userAPI.checkGifHash( req.params.screenName, req.params.gifHash, function( err, hash ){
+	req.app.locals.userAPI.checkImageOwnership( req.params.screenName, req.params.gifHash, function( err, hash ){
 		if ( err ) return next();
         res.render("user-animation");
 	});
@@ -130,7 +130,8 @@ function addImageToSequence(req, res, next) {
 
 function generateGif(req, res, next) {
     req.app.locals.imagesAPI.createGif({sequence: req.body.sequence,
-        api: req.app.locals.userAPI}, function(err, res) {
+        api: req.app.locals.userAPI,
+        id: req.session.user._id }, function(err, res) {
         if (err) { return res.send(err, 500); }
         res.send(res);
     });
