@@ -1,6 +1,6 @@
 /* Styles */
 body{
-	background: #222;
+	background: #39a7c9 url(../img/stash-background-repeating.png);
 }
 
 header{
@@ -28,17 +28,32 @@ header h1 a .icon{
 
 }
 
+#apple-app-download{
+	display: block
+}
+
 footer{
 	border-top:15px solid #999;
 	padding-top: 20px;
-	color: #ccc
+	padding-bottom: 40px;
+	
+}
+#columns{
+	
+}
+#team-stache h3{
+	color: #fff;
+	text-shadow:0 1px 0 #000;
+}
+#footer-content{
+	margin-top: 20px
 }
 footer a{
 	color: #fff
 }
 footer a:hover,
 footer a:focus{
-	color: #ccc
+	color: #000
 }
 
 
