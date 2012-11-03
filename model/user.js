@@ -81,11 +81,11 @@ function addImageToUser(params, callback) {
     var saveGif = params.saveGif;
     getImagesByUser(user, function(err, res) {
         if (err) { return callback.call(err, err); }
-        var title = params.title !== null && typeof params.title !== 'undefined' 
+        var title = (params.title !== null && typeof params.title !== 'undefined')
         ? params.title : "My Awesome Stache";
         if (saveGif) {
             res.animations.push({gif: imageID,
-                title: params.title,
+                title: title,
                 sequence: params.sequence});
         } else {
             res.images.push(imageID);
@@ -184,7 +184,7 @@ function checkImage(user, hash, callback) {
         }
         for(var i=0; i < res.animations.length; ++i) {
             if (res.animations[i].gif === hash) {
-                return callback.call(hash, null, hash);
+                return callback.call(res.animations[i], null, hash);
             }
         }
         var errMsg = 'Invalid Hash';
