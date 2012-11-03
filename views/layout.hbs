@@ -7,6 +7,9 @@
 	<link rel="stylesheet" href="/assets/css/bootstrap.min.css" type="text/css" />
 	<link rel="stylesheet" href="/assets/css/bootstrap-responsive.min.css" type="text/css" />
 	<link rel="stylesheet" href="/assets/css/styles.css" type="text/css" />
+	<!-- <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,900,300italic,400italic,700italic' rel='stylesheet' type='text/css'> -->
+	<link href='http://fonts.googleapis.com/css?family=Fredoka+One' rel='stylesheet' type='text/css'>
+
 
 	<!--[if lt IE 9]>
 	<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></
@@ -25,23 +28,30 @@
 		<div class="container">
 			<div class="row">
 
-				<div class="span6">
-					<img src="/assets/img/mm_logo_trans.png" alt="Mustache Monitor" />
+				<div class="span3">
+					<a href="/" title="Home"><img src="/assets/img/mm_logo_trans.png" alt="Mustache Monitor" /></a>
 				</div>
+				<div class="span9">
 
-				<div class="span6">
-					{{#if req.session.user}}
-						<a href="/user/logout" title="Logout"><i class="icon icon-lock"></i> Logout</a>
-					{{else}}
-						<a href="/user/login" title="Logout"><i class="icon icon-user"></i> Login</a>
-					{{/if}}
+					<center>
+						<h1>Share Your Stache
+
+						{{#if req.session.user}}
+							<a href="/user/logout" class="btn btn-info" title="Logout"><i class="icon-white icon-lock"></i> Logout</a>
+						{{else}}
+							<a href="/user/login" class="btn btn-info" title="Logout"><i class="icon-white icon-user"></i> Login</a>
+						{{/if}}
+						</h1>
+						
+						
+					</center>
 				</div>
-
+				
 			</div>
 			<br/>
 
 
-				<div class="navbar navbar-inverse">
+				<div class="navbar navbar-inverse hide hidden-desktop-disabled">
 				  <div class="navbar-inner">
 				    <div class="container">
 
@@ -68,11 +78,13 @@
 		</div>
 	</header>
 
-	<div class="container">
-	  <div class="row">
-		    <div id="content" class="span12">
-				{{{body}}}
-		    </div>
+	<div id="content-wrapper">
+		<div class="container">
+		  <div class="row">
+			    <div id="content" class="span12">
+					{{{body}}}
+			    </div>
+			</div>
 		</div>
 	</div>
 
@@ -82,10 +94,21 @@
 			<div class="row">
 				<div class="span12">
 					<!-- FOOTER -->
-					<hr/>
+					
 					<center>
-						Lorem Ipsum	
+						&copy; 2012 Mustache Monitor<br/>
+
+						<a href="https://www.facebook.com/MustacheMonitor" title="Facebook">Facebook</a> |
+						<a href="https://twitter.com/MustacheMonitor" title="Twitter">Twitter</a>
 					</center>
+<!-- 
+<div class="fb-like" data-href="https://www.facebook.com/MustacheMonitor" data-send="true" data-width="450" data-show-faces="false" data-colorscheme="dark" data-font="segoe ui"></div>
+
+
+						<a href="https://twitter.com/intent/tweet?button_hashtag=mustache&text=Share%20Your%20Stache%20%2Fvia%20http%3A%2F%2Fmustachemonitor.com" class="twitter-hashtag-button" data-size="large">Tweet #mustache</a>
+						<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+ -->
 				</div>
 			</div>
 		</div>

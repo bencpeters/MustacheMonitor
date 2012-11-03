@@ -8,6 +8,13 @@
 <form class="form-horizontal" action="/user/create" method="POST">
     
 	<div class="control-group">
+		<label class="control-label" for="screenName">Screen Name:</label>
+		<div class="controls">
+			<input class="span3" id="screenName" type="text" name="screenName" value="" placeholder="" />
+		</div>		
+	</div>
+
+	<div class="control-group">
 		<label class="control-label" for="firstName">First Name:</label>
 		<div class="controls">
 			<input class="span3" id="firstName" type="text" name="firstName" value="" placeholder="" />
@@ -27,14 +34,6 @@
 			<input class="span3" id="email" type="text" id="email" name="email" onblur="this.value=this.value.replace( /\s+/g, '' );" value="" placeholder="" />
 		</div>	
 	</div>
-
-	<div class="control-group">
-		<label class="control-label" for="screenName">Screen Name:</label>
-		<div class="controls">
-			<input class="span3" id="screenName" type="text" name="screenName" value="" placeholder="" />
-		</div>		
-	</div>
-
 
 	<div class="control-group">
 		<label class="control-label" for="password">Password:</label>
