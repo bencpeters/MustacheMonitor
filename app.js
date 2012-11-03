@@ -5,6 +5,7 @@ var config = require('./config').config;
  */
 
 var express = require('express')
+  , MongoStore = require('connect-mongo')(express)
   , routes = require('./routes')
   , upload = require('./routes/upload')
   , user = require('./routes/user')
@@ -13,7 +14,7 @@ var express = require('express')
   , path = require('path')
   , hbs = require('hbs');
 
-var db = require('mongoskin').db(config.mongohq.host)
+var db = require('mongoskin').db(config.mongohq.url)
   , imagesAPI = require('./model/image')
   , userAPI = require('./model/user');
 
@@ -25,7 +26,6 @@ imagesAPI.setDb(db);
 userAPI.setDb(db);
 
 var app = express();
-var MemStore = require('connect').session.MemoryStore;
 
 hbs.registerHelper('printError', function(items, options) {
     var out = "";
@@ -49,7 +49,6 @@ hbs.registerHelper('loggedIn', function(item, options) {
     return this.loggedIn;
 });
 
-
 app.configure(function(){
   app.set('port', process.env.PORT || 3000);
   app.set('views', __dirname + '/views');
@@ -59,9 +58,8 @@ app.configure(function(){
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(express.cookieParser());
-  app.use(express.session({secret: 's3cret$t@che', store: MemStore({
-    reapInterval: 6000 * 10
-  })}));
+  app.use(express.session({ secret: config.secret,
+      store: new MongoStore({url: config.mongohq.url})}));
   app.use(function(req, res, next) {
         res.locals.loggedIn = (function() {
             if (req.session && req.session.user) {
