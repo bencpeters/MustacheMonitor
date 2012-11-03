@@ -27,6 +27,7 @@ exports.createPage = function(req, res, next){
         errors = "";
     }
 	if( req.session.user ) res.redirect("/user");
+    res.status(406);
 	res.render('user-create', {title: "Create User",
                                errors: errors} );
 };
@@ -63,6 +64,7 @@ function userLogin(req, res, next){
                 req.session.user = user;
                 res.redirect(url);
 			} else {
+                res.status(401);
 				res.render('login', { error: err, title: 'Error'});
 			}
 		});

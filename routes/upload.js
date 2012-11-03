@@ -1,7 +1,8 @@
 exports.uploadImage = function(req, res, next) {
     var imagesAPI = req.app.locals.imagesAPI;
     if (req.files.displayImage.size > 0) {
-        imagesAPI.saveImage('blah', req.files.displayImage.path,
+        imagesAPI.saveImage({api: req.app.locals.userAPI,
+            id: req.session.user._id}, req.files.displayImage.path,
             function(err, id) {
             if (err) { return res.send('Error: ' + err, 500); }
             res.contentType('application/json');
