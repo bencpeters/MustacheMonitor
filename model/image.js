@@ -75,7 +75,6 @@ function deleteImage(imageID, callback){
 
 function createGif(params, callback) {
     var sequence = params.sequence;
-    console.log(sequence);
     if (typeof sequence === 'undefined' || sequence.length < 2) {
         var errMsg = 'Not enough images for an animation';
         callback.call(errMsg, errMsg);
@@ -118,7 +117,6 @@ function makeGif(params, tempDir, callback) {
         // convert -delay 20 -loop 0 input*.gif output.gif // Delay, no loop
         function(err, stdout){
             if (err) return callback.call(err, err );
-            console.log(params);
             return exports.saveImage(params, gifPath, callback);
         }
     );
