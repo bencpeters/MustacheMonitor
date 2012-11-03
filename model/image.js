@@ -33,6 +33,12 @@ function getImage(imageID, callback){
 }
 
 function saveImage(user, image, callback){
+    var saveGif
+    if (user.hasOwnProperty('saveGif')) {
+        saveGif = user.saveGif;
+    } else {
+        saveGif = false;
+    }
     var id = new ObjectId();
     var theImage = new gsFile(db, id, 'w');
     theImage.open(function(err, file) {
@@ -43,14 +49,16 @@ function saveImage(user, image, callback){
             if (err) {
                 return callback.call(err, err);
             }
-            user.api.addImageToUserSequence(id.toString(), user.id, function(err,res) {
+            user.api.addImageToUser({imageId : id.toString(), 
+                userId: user.id,
+                saveGif: saveGif}, function(err,res) {
                 if (err) { 
                     exports.deleteImage(id, function(newErr, res) {
                         if (err) { return callback.call(newErr, newErr); }
                         return callback.call(err, err); 
                     });
                 }
-                return callback.apply(res, [null, id]); 
+                return callback.apply(res, [null, id.toString()]); 
             });
         });
     });
@@ -66,7 +74,6 @@ function deleteImage(imageID, callback){
 }
 
 function createGif(params, callback) {
-    var userAPI = params.api;
     var sequence = params.sequence;
     if (!sequence.length || sequence.length < 2) {
         var errMsg = 'Not enough images for an animation';
@@ -94,7 +101,7 @@ function createGif(params, callback) {
                         }
                         console.log(filePath + ' created!');
                         if (++numImgsSaved === sequence.length) {
-                             return makeGif(dirPath,callback);
+                             return makeGif(params, dirPath,callback);
                         }
                     });
                 });
@@ -103,10 +110,10 @@ function createGif(params, callback) {
     });
 }
 
-function makeGif(tempDir, callback) {
-    
+function makeGif(params, tempDir, callback) {
     var gifPath = path.join(tempDir, 'output.gif');
     var imgSeq = path.join( tempDir, 'img*.jpg');
+    params.saveGif = true;
 
     console.log(tempDir);
     console.log(imgSeq);
@@ -117,13 +124,9 @@ function makeGif(tempDir, callback) {
         ['-delay', '1/1', '-loop', '0', imgSeq, gifPath], 
         // convert -delay 20 -loop 0 input*.gif output.gif // Delay, no loop
         function(err, stdout){
-            if (err) return callback.call( null, err );
-            console.log('stdout:', stdout);
-
-            return callback.call( null, "GIF BABY");
+            if (err) return callback.call(err, err );
+            return exports.saveImage(params, gifPath, callback);
         }
     );
-   
-    // return callback.call( null, "Some err");
 }
 
