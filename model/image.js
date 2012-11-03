@@ -66,7 +66,7 @@ function saveImage(user, image, callback){
 }
 
 function deleteImage(imageID, callback){
-    var id = newObjectId(imageID);
+    var id = new ObjectId(imageID);
     var theImage = new gsFile(db, id, 'w');
     theImage.unlink(function (err, res) {
         if (err) { return callback.call(err, err); }
@@ -78,6 +78,10 @@ function createGif(params, callback) {
     var sequence = params.sequence;
     if (typeof sequence === 'undefined' || sequence.length < 2) {
         var errMsg = 'Not enough images for an animation';
+        callback.call(errMsg, errMsg);
+    }
+    if (sequence.length > 30) {
+        var errMsg = 'Too many images (more than 30) for an animation';
         callback.call(errMsg, errMsg);
     }
     tempFS.mkdir('tmp', function(err, dirPath) {

@@ -60,6 +60,8 @@ app.configure('development', function(){
 
 app.get('/', routes.index);
 app.get('/images/:imageId', session.requiresLogin, routes.viewImage);
+app.get('/images/delete/:imageId', session.requiresLogin, routes.deleteImage);
+app.delete('/images/:imageId', session.requiresLogin, routes.deleteImage);
 
 // user routes
 app.get('/user', session.requiresLogin, user.index );

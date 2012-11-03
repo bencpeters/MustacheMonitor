@@ -14,6 +14,8 @@ exports.getUserImages = userImages;
 exports.addImageToUser = addImageToUser;
 exports.checkImageOwnership = checkImage;
 exports.getUserByScreenName = getUserByScreenName;
+exports.deleteImageFromUser = deleteImage;
+
 
 function setDb(database) {
     db = database;
@@ -49,7 +51,6 @@ function authenticateUser(user, pw, callback) {
             return callback.call(errMsg, errMsg);
         }
     });
-
 }
 
 function getImagesByUser(user, callback) {
@@ -200,3 +201,26 @@ function getUserByScreenName(user, callback) {
 
 }
 
+function deleteImage(user, hash, callback) {
+    getImagesByUser(user, function(err, res) {
+        if (err) { return callback.call(err, err); }
+        var index = res.images.indexOf(hash);
+        if (index >= 0) {
+            res.images.splice(index, 1);
+        }
+        for (var i=0; i < res.animations.length; ++i) {
+            if (res.animations[i].gif === hash) {
+                res.animations.splice(i, 1);
+                index = i;
+                break;
+            }
+        }
+        if (index >= 0) {
+            db.collection('users').updateById(user, {$set : { 'animations' :
+                res.animations, 'images' : res.images}}, function(err, res) {
+                if (err) { return callback.call(err, err); }
+                return callback.call(res, null, res);
+            });
+        }
+    });
+}
