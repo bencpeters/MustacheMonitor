@@ -104,6 +104,11 @@ function getSequence(req, res, next) {
         if (err) {
             return res.send(err, 500);
         }
+        if (!seq.length || seq.length < 1) {
+            seq = [];
+        } else {
+            seq = seq.sequence;
+        }
         res.contentType('application/json');
         res.send(seq);
     });
