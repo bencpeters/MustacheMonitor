@@ -35,14 +35,16 @@
 
 					<center>
 						<h1>Share Your Stache
-
-						{{#if req.session.user}}
+						
+						{{#if app.req.session.user}}
 							<a href="/user/logout" class="btn btn-info" title="Logout"><i class="icon-white icon-lock"></i> Logout</a>
 						{{else}}
-							<a href="/user/login" class="btn btn-info" title="Logout"><i class="icon-white icon-user"></i> Login</a>
+							<a href="/user/login" class="btn btn-info" title="Login"><i class="icon-white icon-user"></i> Login</a>
+							<a href="/user/logout" class="btn btn-danger" title="Logout"><i class="icon-white icon-lock"></i> Logout</a>
 						{{/if}}
 						</h1>
 						
+								
 						
 					</center>
 				</div>
