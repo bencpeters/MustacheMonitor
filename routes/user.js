@@ -58,8 +58,6 @@ function getUserPage(req, res, next){
 
 		if( user ){
 			delete user._id;
-			delete user.password;
-
 			res.render('user-public',{ title: user.screenName, user: user });
 		} else next();
 
