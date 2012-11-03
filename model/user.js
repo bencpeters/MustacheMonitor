@@ -49,11 +49,8 @@ function authenticateUser(user, pw, callback) {
 }
 
 function userSequence(user, callback) {
-    console.log('in api call');
     var id = new ObjectId(user);
     db.collection('users').findById(id, {sequences: true, _id: 0}, function(err, res) {
-        console.log('found');
-        console.log(res);
         if (err) { return callback.call(err, err); }
         return callback.call(res.sequences[0], null, res.sequences[0]);
     });

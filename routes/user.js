@@ -100,14 +100,12 @@ function userLogin(req, res, next){
 };
 
 function getSequence(req, res, next) {
-    console.log('in sequence');
     req.app.locals.userAPI.getUserSequence(req.session.user._id,
         function(err, seq) {
         if (err) {
             return res.send(err, 500);
         }
-        console.log(seq);
-        if (!seq.length || seq.length < 1) {
+        if (typeof seq === 'undefined') {
             seq = [];
         } else {
             seq = seq.sequence;
