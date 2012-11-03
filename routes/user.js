@@ -14,7 +14,8 @@ exports.getSequence = getSequence;
 exports.addImage = addImageToSequence;
 exports.generateGif = generateGif;
 exports.generateGifFromSequence = generateGifFromSequence;
-exports.getAnimation = getAnimation;
+exports.getAnimationPage = getAnimation;
+exports.getGif = getGif;
 
 exports.index = function(req, res){
   var _user = req.session.user;
@@ -47,25 +48,22 @@ exports.create = function(req, res, next) {
 }
 
 // Functions
-
 function getAnimation(req, res, next){
-
 	req.app.locals.userAPI.checkGifHash( req.params.screenName, req.params.gifHash, function( err, hash ){
 		if ( err ) return next();
-		
-		req.app.locals.imagesAPI.getImage( hash,
-		      function(err, data) {
-		      if (err) return next();
-
-		      // res.contentType('image/jpg');
-		      // res.end(data);
-
-			  res.render("user-animation");
-
-		  });
-
+        res.render("user-animation");
 	});
+}
 
+function getGif(req, res, next) {
+    req.app.locals.userAPI.checkGifHash(req.params.screenName, req.params.gifHash, function(err, hash) {
+        if (err) { return next(); }
+        req.app.locals.imagesAPI.getImage(hash, function(err, data) {
+            if (err) { return next(); }
+            res.contentType('image/gif');
+            res.end(data);
+        });
+    });
 }
 
 function userLogout(req, res, next){

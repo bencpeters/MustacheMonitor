@@ -1,4 +1,4 @@
-id db
+var db
   , ObjectId = require('mongoskin').ObjectID;
 
 var pwHash = require('password-hash');
