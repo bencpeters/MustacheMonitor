@@ -70,7 +70,7 @@ function deleteImage(imageID, callback){
     var id = new ObjectId(imageID);
     var theImage = new gsFile(db, id, 'w');
     theImage.unlink(function (err, res) {
-        if (err) { return callback.call(err, err); }
+        if (err) { return callback.call(imageID, err); }
         return callback.call(imageID, null, imageID);
     });
 }
@@ -120,7 +120,6 @@ function makeGif(params, tempDir, callback) {
     // Animated GIF
     im.convert(
         ['-delay', '1/1', '-loop', '0', imgSeq, gifPath], 
-        // convert -delay 20 -loop 0 input*.gif output.gif // Delay, no loop
         function(err, stdout){
             if (err) return callback.call(err, err );
             return exports.saveImage(params, gifPath, callback);

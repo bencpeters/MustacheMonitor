@@ -2,6 +2,6 @@
 	<h1>{{user.screenName}}</h1>
 </div>
 
-{{#userAnimations user}}
-  {{msg}}
-{{/userAnimations}}
+{{#each user.animations}}
+    <a href="{{url}}" title="{{title}}"><img src="{{gif}}" width="150" alt="{{title}}" /></a>
+{{/each}}

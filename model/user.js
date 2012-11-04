@@ -1,8 +1,8 @@
 var db
-  , ObjectId = require('mongoskin').ObjectID;
+  , ObjectId = require('mongoskin').ObjectID
+  , imagesApi = require('../model/image');
 
 var pwHash = require('password-hash');
-// var crypto = require('crypto');
 
 exports.setDb = setDb;
 
@@ -15,9 +15,17 @@ exports.addImageToUser = addImageToUser;
 exports.checkImageOwnership = checkImage;
 exports.getUserByScreenName = getUserByScreenName;
 exports.deleteImageFromUser = deleteImage;
+exports.deleteAnimationFromUser = deleteGif;
+exports.deleteAllImages =  function(user, callback) { 
+    return deleteAllImages(user, userImages, deleteImage, callback);
+};
+exports.deleteAllGifs = function(user, callback) {
+    return deleteAllImages(user, userGifs, deleteGif, callback);    
+};
 
 function setDb(database) {
     db = database;
+    imagesApi.setDb(db);
 }
 
 function createUser(user, callback) {
@@ -52,26 +60,21 @@ function authenticateUser(user, pw, callback) {
     });
 }
 
-function getImagesByUser(user, callback) {
+function userGifs (user, callback) {
     var id = new ObjectId(user);
-    db.collection('users').findById(id, {images: 1, animations: 1, 
-        _id: 0}, function(err, res) {
-        if (err) { return callback.call(err, err); }
-        return callback.call(res, null, res);
+    db.collection('users').findById(id, {animations: 1, _id:0},
+        function(err, res) {
+        if(err) { return callback.call(null, err); }
+        return callback.call(res, null, res.animations);
     });
 }
 
 function userImages (user, callback) {
-    getImagesByUser(user, function(err, res) {
+    var id = new ObjectId(user);
+    db.collection('users').findById(id, {images: 1, 
+        _id: 0}, function(err, res) {
         if (err) { return callback.call(err, err); }
-        return callback.call(res.images, null, res.images);
-    });
-}
-
-function userGifs (user, callback) {
-    getImagesByUser(user, function(err, res) {
-        if (err) { return callback.call(err, err); }
-        return callback.call(res.animations, null, res.animations);
+        return callback.call(res, null, res.images);
     });
 }
 
@@ -79,24 +82,22 @@ function addImageToUser(params, callback) {
     var imageID = params.imageId;
     var user = params.userId;
     var saveGif = params.saveGif;
-    getImagesByUser(user, function(err, res) {
-        if (err) { return callback.call(err, err); }
+    if (saveGif) {
         var title = (params.title !== null && typeof params.title !== 'undefined')
         ? params.title : "My Awesome Stache";
-        if (saveGif) {
-            res.animations.push({gif: imageID,
-                title: title,
-                sequence: params.sequence});
-        } else {
-            res.images.push(imageID);
-        }
-
-        db.collection('users').updateById(user, {$set : { 'animations' :
-            res.animations, 'images' : res.images}}, function(err, res) {
-            if (err) { return callback.call(err, err); }
+        db.collection('users').updateById(user, {$push : { 'animations' :
+            {gif: imageID, title: title, sequence: params.sequence}}},
+            function(err, res) {
+            if (err) { return callback.call(imageID, err); }
             return callback.call(res, null, res);
         });
-    });
+    } else {
+        db.collection('users').updateById(user, {$push : { 'images' :
+            imageID}}, function(err, res) {
+            if (err) { return callback.call(imageID, err); }
+            return callback.call(res, null, res);
+        });
+    }
 }
 
 function validateUser(user, callback) {
@@ -144,6 +145,10 @@ function validateUser(user, callback) {
     } else {
         errors.push({msg: 'Need to specifiy a screen name'});
     }
+    
+    if (userObj.screenName === 'login' || userObj.screenName === 'create') {
+        errors.push({msg: 'Screen Name is invalid'});
+    }
 
     if (errors.length === 0) {
         db.collection('users').findOne({screenName: userObj.screenName}, function(err, res) {
@@ -171,24 +176,17 @@ function validateUser(user, callback) {
 }
 
 function checkImage(user, hash, callback) {
-    db.collection('users').findOne({"screenName": user},{"images": 1,
-        "animations": 1}, function(err, res) {
-        if (err) { return callback.call(err, err); }
-        if (res === null || typeof res.images === 'undefined' ||
-            typeof res.animations === 'undefined') {
-            var errMsg = 'Old DB';
-            return callback.call(errMsg, errMsg);
-        }
-        if (res.images.indexOf(hash) >= 0) {
+    db.collection('users').findOne({'screenName': user, $or : [{'images' : 
+        {$elemMatch : {$in : [hash]}}}, {animations : {$elemMatch : {'gif':hash}}}]}, 
+        {_id : 0, 'images' : {$elemMatch : {$in :[hash]}}, 'animations' :
+        {$elemMatch : {'gif':hash}}}, function(err, res) {
+        if (err) { return callback.call(hash, err); }
+        if (res === null) { return callback.call(hash, 'Invalid Hash'); }
+        if (res.animations) {
+            return callback.call(res.animations[0], null, hash);
+        } else {
             return callback.call(hash, null, hash);
         }
-        for(var i=0; i < res.animations.length; ++i) {
-            if (res.animations[i].gif === hash) {
-                return callback.call(res.animations[i], null, hash);
-            }
-        }
-        var errMsg = 'Invalid Hash';
-        return callback.call(errMsg, errMsg);
     });
 }
 
@@ -197,31 +195,63 @@ function getUserByScreenName(user, callback) {
         if( err ) { return callback.call(err, err); }
         if( res ) return callback.call( res, null, res);
 
-        var errMsg = 'Error, not found';
+        var errMsg = 'Error, screenname ' + user + ' not found';
         return callback.call(errMsg, errMsg);
     });
 
 }
 
 function deleteImage(user, hash, callback) {
-    getImagesByUser(user, function(err, res) {
-        if (err) { return callback.call(err, err); }
-        var index = res.images.indexOf(hash);
-        if (index >= 0) {
-            res.images.splice(index, 1);
+    db.collection('users').updateById(user, {$pull : {'images' : hash}},
+        function(err, res) {
+        if (err) { return callback.call(hash, err); }
+        return callback.call(res, null, res);
+    });
+}
+
+function deleteGif(user, hash, callback) {
+    db.collection('users').updateById(user,
+        {$pull : {'animations' : {'gif' : hash} } }, function(err, res) {
+        if (err) { return callback.call(hash, err); }
+        return callback.call(res, null, res);
+    });
+} 
+
+function deleteAllImages(user, getImage, deleteImage, callback) {
+    getImage(user, function(err, res) {
+        if (err) { return callback.call(err, {msg: err}); }
+        if (typeof res === 'undefined' || typeof res.length === 'undefined' || 
+            res.length < 1) {
+            return callback.call(res, {msg:'No images found'});
         }
-        for (var i=0; i < res.animations.length; ++i) {
-            if (res.animations[i].gif === hash) {
-                res.animations.splice(i, 1);
-                index = i;
-                break;
-            }
-        }
-        if (index >= 0) {
-            db.collection('users').updateById(user, {$set : { 'animations' :
-                res.animations, 'images' : res.images}}, function(err, res) {
-                if (err) { return callback.call(err, err); }
-                return callback.call(res, null, res);
+        var response = { errors: [], successes: [] };
+        for (var i=0; i < res.length; ++i) {
+            res[i] = res[i].hasOwnProperty('gif') ? res[i].gif : res[i];
+            imagesApi.deleteImage(res[i], function(err, id) {
+                if (err) { 
+                    response.errors.push({id: this, msg: err}); 
+                    if (response.errors.length + response.successes.length
+                        === res.length) {
+                        return callback.call(response, response.errors,
+                            response.successes);
+                    }
+                } else {
+                    deleteImage(user, id, function(err) {
+                        if (err) {
+                            response.error.push({id: this, msg: err});
+                        } else {
+                            response.successes.push({id: id});
+                        }
+                        if (response.errors.length + 
+                            response.successes.length 
+                            === res.length) {
+                            var errors = response.errors.length > 0 ?
+                                response.errors : null;
+                            return callback.call(response, errors,
+                                response.successes);
+                        }
+                    });
+                }
             });
         }
     });
@@ -232,8 +262,6 @@ function getUserByScreenName(user, callback) {
         if( err ) return callback.call(err, err);
         if( res ) return callback.call( res, null, res);
 
-        var errMsg = 'Error, not found';
-        return callback.call(errMsg, errMsg);
+        return callback.call(user, 'User not found');
     });
-
 }

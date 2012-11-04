@@ -28,24 +28,6 @@ userAPI.setDb(db);
 
 var app = express();
 
-hbs.registerHelper('printError', function(items, options) {
-    var out = "";
-    for(var i=0; i < items.length; i++) {
-        out = out + options.fn(items[i]) + '<br>';
-    }
-    return out;
-});
-
-hbs.registerHelper('userAnimations', function(user, options) {
-    var out = "";
-    var items = user.animations;
-    for(var i=0; i < items.length; i++) {
-        out = out + '<a href="/user/'+user.screenName+'/'+items[i].gif+'/" title="'+items[i].title+'"><img src="/user/'+user.screenName+'/'+items[i].gif+'/gif" width="150" alt=""/></a>';
-    }
-    return out;
-});
-
-
 hbs.registerHelper('loggedIn', function(item, options) {
     return this.loggedIn;
 });
@@ -80,39 +62,48 @@ app.configure(function(){
         imagesAPI: imagesAPI,
         userAPI: userAPI
   });
-app.get('/', routes.index);
-app.get('/images/:imageId', session.requiresLogin, routes.viewImage);
-app.get('/images/delete/:imageId', session.requiresLogin, routes.deleteImage);
-app.delete('/images/:imageId', session.requiresLogin, routes.deleteImage);
 
-// user routes
+
+//admin/testing routes
+app.get('/images/delete/:imageId', session.isMustacheAficionado, session.requiresLogin, routes.deleteImage);
+app.get('/user/generate', session.isMustacheAficionado, session.requiresLogin, user.generateGifFromSequence);
+app.get('/user/images/delete', session.isMustacheAficionado, session.isMustacheAficionado, session.requiresLogin, user.deleteAllImages);
+app.get('/user/animations/delete', session.isMustacheAficionado, session.requiresLogin, user.deleteAllGifs);
+app.get('/upload', session.isMustacheAficionado, session.requiresLogin, upload.uploadPage);
+
+//loggedin user routes
+app.get('/image/:imageId', session.requiresLogin, routes.viewImage);
 app.get('/user', session.requiresLogin, user.index );
-app.get('/user/create', user.createPage);
-app.post('/user/create', user.create);
 app.get('/user/edit', session.requiresLogin, user.edit);
-app.get('/user/login', user.login );
-app.post('/user/login', user.processLogin );
-app.get('/user/logout', user.logout );
+app.get('/user/logout', session.requiresLogin, user.logout );
 app.get('/user/sequence/:gifHash', session.requiresLogin, user.getSequence);
 app.get('/user/images', session.requiresLogin, user.getImages);
 app.get('/user/animations', session.requiresLogin, user.getAnimations);
 app.post('/user/addimage', session.requiresLogin, user.addImage);
 app.post('/user/setsequence', session.requiresLogin, user.setSequence);
-app.get('/user/generate', session.requiresLogin, user.generateGifFromSequence);
 app.post('/user/generate', session.requiresLogin, user.generateGif);
+app.delete('/user/images', session.requiresLogin, user.deleteAllImages);
+app.delete('/user/animations', session.requiresLogin, user.deleteAllGifs);
+app.delete('/image/:imageId', session.requiresLogin, routes.deleteImage);
+
+//public routes
+app.get('/', routes.index);
+app.get('/user/login', user.login );
+app.post('/user/login', user.processLogin );
+app.get('/user/create', user.createPage);
+app.post('/user/create', user.create);
 app.get('/user/:screenName', user.getUserPage );
 app.get('/user/:screenName/:gifHash', user.getAnimationPage );
 app.get('/user/:screenName/:gifHash/gif', user.getGif);
 
 //upload routes
-app.get('/upload', session.requiresLogin, upload.uploadPage);
 app.post('/upload', session.requiresLogin, upload.uploadImage);
 
 //catch-alls for errors and not found
 app.all('/404', function(req, res) { 
     var status = req.session.errorStatus ? req.session.errorStatus : 404;
     delete req.session.errorStatus;
-    res.status(status).render('404'); 
+    res.status(status).render('404', {title: 'I Mustache Your Forgiveness'}); 
 });
 app.all('/500', function(req, res) { throw { msg: 'Hit 500 path', status: 500}; });
 app.all('*', function(req, res) { throw { msg: 'Invalid route', status: 404}; });

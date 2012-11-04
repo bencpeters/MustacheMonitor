@@ -20,8 +20,11 @@ exports.viewImage = function(req, res, next) {
 };
 
 exports.deleteImage = function(req, res, next) {
+    //figure out if this is an HTTP POST or GET
+    var imageId = (req.params && req.params.imageId) ? req.params.imageId :
+        req.body.imageId;
     req.app.locals.userAPI.checkImageOwnership(req.session.user.screenName,
-        req.params.imageId, function(err, hash) {
+        imageId, function(err, hash) {
         if (err) { return next(err); }
         req.app.locals.imagesAPI.deleteImage(hash, function(err, data) {
             if (err) { return next(err); }

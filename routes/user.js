@@ -4,7 +4,8 @@
  */
 var config = require('../config').config
   , path = require('path')
-  , crypto = require('crypto');
+  , crypto = require('crypto')
+  , util = require('../lib/helpers');
 
 exports.login = userLogin;
 exports.processLogin = userLogin;
@@ -18,6 +19,8 @@ exports.generateGifFromSequence = generateGifFromSequence;
 exports.getAnimationPage = getAnimation;
 exports.getGif = getGif;
 exports.getUserPage = getUserPage;
+exports.deleteAllImages = deleteAllImages;
+exports.deleteAllGifs = deleteAllGifs;
 
 exports.index = function(req, res){
   var _user = req.session.user;
@@ -32,7 +35,9 @@ exports.createPage = function(req, res, next){
     } else {
         errors = "";
     }
-	if( req.session.user ) res.redirect("/user");
+	if( req.session.user ) {
+        return res.redirect("/user");
+    }
     res.status(400);
 	res.render('user-create', {title: "Create User",
                                errors: errors} );
@@ -55,9 +60,15 @@ function getUserPage(req, res, next){
         function(err, user) {
         if (err) { return next(err); }
         if (user) {
-            delete user._id;
+            var args = { screenName: user.screenName,
+                animations: [] };
+            for (var i=0; i < user.animations.length; ++i) {
+                args.animations.push({gif: util.getGifPath(user.animations[i].gif, user.screenName),
+                    link: util.getAnimationPagePath(user.animations[i].gif, user.screenName),
+                    title: user.animations[i].title});
+            }
             return res.render('user-public', { title: user.screenName,
-                user: user 
+                user: args 
             });
 		} else {
             return next();
@@ -117,7 +128,6 @@ function userLogin(req, res, next){
 	if( req.body.password && req.body.password.length ){
         req.app.locals.userAPI.authenticateUser(req.body.screenName,
             req.body.password, function(err, user) {
-            if (err) { return next(err); }
 			if (user) {
                 var url = req.session.prev ? req.session.prev : '/user';
                 req.session.user = user;
@@ -207,23 +217,44 @@ function generateGif(req, res, next) {
         id: req.session.user._id }, function(err, result) {
         if (err) { return next(err); }
         result = { id: result,
-                   url: config.baseUrl + '/user/'  + 
-            req.session.user.screenName + '/' + result};
+                   url: util.getGlobalAnimationPagePath(result,
+                       req.session.user.screenName)};
         res.send(result);
     });
 }
 
 function generateGifFromSequence(req, res, next) {
-    req.app.locals.userAPI.getUserImages(req.session.user._id, function(err, result) {
+    req.app.locals.userAPI.getUserImages(req.session.user._id, 
+        function(err, result) {
         if (err) { return next(err); }
         req.app.locals.imagesAPI.createGif({sequence: result,
             api: req.app.locals.userAPI,
             id: req.session.user._id }, function(err, result) {
             if (err) { return next(err); }
             result = { id: result,
-                       url: config.baseUrl + '/user/'  + 
-                req.session.user.screenName + '/' + result};
+                       url: util.getGlobalAnimationPagePath(result,
+                           req.session.user.screenName)};
             res.send(result);
         });
+    });
+}
+
+function deleteAllImages(req, res, next) {
+    req.app.locals.userAPI.deleteAllImages(req.session.user._id, 
+        function(err, result) {
+        if (err && err.hasOwnProperty('msg')) { return next(err.msg); }
+        res.render('delete-images', { title: 'Delete Images',
+            errors: err,
+            successes: result});
+    });
+}
+
+function deleteAllGifs(req, res, next){
+    req.app.locals.userAPI.deleteAllGifs(req.session.user._id,
+        function(err, result) {
+        if (err && err.hasOwnProperty('msg')) { return next(err.msg); }
+        res.render('delete-images', { title: 'Delete Images',
+            errors: err,
+            successes: result});
     });
 }

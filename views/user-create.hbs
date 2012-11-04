@@ -1,7 +1,9 @@
 {{#if errors}}
 	<div class="alert alert-danger">
 	  <button type="button" class="close" data-dismiss="alert">×</button>
-	  {{#printError errors}}{{msg}}{{/printError}}
+      <ul>
+	  {{#each errors}}<li>{{msg}}</li>{{/each}}
+      </ul>
 	</div>
 {{/if}}
 

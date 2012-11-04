@@ -1,0 +1,13 @@
+{{#if successes}}
+<h1>Images successfully deleted:</h1>
+<ul>
+{{#each successes}}<li>{{id}}</li>{{/each}}
+</ul>
+{{/if}}
+
+{{#if errors}}
+<h1>We messed up trying to delete these images:</h1>
+<ul>
+{{#each errors}}<li>{{id}} - {{msg}}</li>{{/each}}
+</ul>
+{{/if}}
