@@ -2,11 +2,9 @@
 /*
  * GET users listing.
  */
-
-var users = {
-	'stache': {username: 'stache', password: 'curly', role: 'user'}
-};
-var config = require('../config').config;
+var config = require('../config').config
+  , path = require('path')
+  , crypto = require('crypto');
 
 exports.login = userLogin;
 exports.processLogin = userLogin;
@@ -35,7 +33,7 @@ exports.createPage = function(req, res, next){
         errors = "";
     }
 	if( req.session.user ) res.redirect("/user");
-    res.status(406);
+    res.status(400);
 	res.render('user-create', {title: "Create User",
                                errors: errors} );
 };
@@ -53,41 +51,49 @@ exports.create = function(req, res, next) {
 
 // Functions
 function getUserPage(req, res, next){
-
-	req.app.locals.userAPI.getUserByScreenName(req.params.screenName,function( err, user ){
-
-		if( user ){
-			delete user._id;
-			res.render('user-public',{ title: user.screenName, user: user });
-		} else next();
-
+	req.app.locals.userAPI.getUserByScreenName(req.params.screenName,
+        function(err, user) {
+        if (err) { return next(err); }
+        if (user) {
+            delete user._id;
+            return res.render('user-public', { title: user.screenName,
+                user: user 
+            });
+		} else {
+            return next();
+        }
 	});
 }
 
-
 function getAnimation(req, res, next){
-	req.app.locals.userAPI.checkImageOwnership( req.params.screenName, req.params.gifHash, function( err, hash ){
-		if ( err ) return next();
+	req.app.locals.userAPI.checkImageOwnership(req.params.screenName,
+        req.params.gifHash, function(err, hash) {
+		if (err) { return next(err) };
 		var url = 'http://' + req.headers.host + req.url;
-		var gifUrl = 'http://' + require('path').join( req.headers.host, req.url, 'gif');
-
+		var gifUrl = 'http://' + path.join(req.headers.host, req.url, 'gif');
 		var gifTitle = this.title;
 
-		req.app.locals.userAPI.getUserByScreenName(req.params.screenName,function( err, user ){
+		req.app.locals.userAPI.getUserByScreenName(req.params.screenName,
+            function(err, user) {
+            if (err) { return next(err); }
 			var email = user.email.toLowerCase();
-			var emailHash = require('crypto').createHash('md5').update(email).digest("hex");
-        	res.render("user-animation", {title: gifTitle, gifTitle: gifTitle, url: url, gifUrl: gifUrl, screenName: req.params.screenName, emailHash: emailHash });
-
+			var emailHash = crypto.createHash('md5').update(email).digest("hex");
+        	return res.render("user-animation", {title: gifTitle,
+                gifTitle: gifTitle,
+                url: url,
+                gifUrl: gifUrl,
+                screenName: req.params.screenName,
+                emailHash: emailHash 
+            });
 		});
-
 	});
 }
 
 function getGif(req, res, next) {
     req.app.locals.userAPI.checkImageOwnership(req.params.screenName, req.params.gifHash, function(err, hash) {
-        if (err) { return next(); }
+        if (err) { return next(err); }
         req.app.locals.imagesAPI.getImage(hash, function(err, data) {
-            if (err) { return next(); }
+            if (err) { return next(err); }
             res.contentType('image/gif');
             res.end(data);
         });
@@ -95,8 +101,7 @@ function getGif(req, res, next) {
 }
 
 function userLogout(req, res, next){
-
-	if( req.session.user ){
+	if(req.session.user) {
 		delete req.session.user;
 	}
 	 
@@ -104,19 +109,23 @@ function userLogout(req, res, next){
 }
 
 function userLogin(req, res, next){
-
-	if( req.session.user ) res.redirect("/user");
+	if(req.session.user) { 
+        var url = req.session.prev ? req.session.prev : '/user';
+        res.redirect(url); 
+    }
 
 	if( req.body.password && req.body.password.length ){
         req.app.locals.userAPI.authenticateUser(req.body.screenName,
             req.body.password, function(err, user) {
-			if( user ){
+            if (err) { return next(err); }
+			if (user) {
                 var url = req.session.prev ? req.session.prev : '/user';
                 req.session.user = user;
                 res.redirect(url);
 			} else {
-                res.status(401);
-				res.render('login', { error: err, title: 'Error'});
+                res.status(400);
+				res.render('login', { error: err,
+                    title: 'User Login | Error'});
 			}
 		});
 
@@ -128,10 +137,10 @@ function userLogin(req, res, next){
 function getSequence(req, res, next) {
     req.app.locals.userAPI.checkImageOwnership(req.session.user.screenName,
         req.params.gifHash, function(err, hash) {
-        if (err) { return res.send(err, 500); }
+        if (err) { return next(err); }
         req.app.locals.userAPI.getUserGifs(req.session.user._id,
             function(err, images) {
-            if (err) { return res.send(err, 500); }
+            if (err) { return next(err); }
             var theSequence = null;
             for(var i=0; i < images.length; ++i) {
                 if (images[i].gif === hash) {
@@ -147,7 +156,7 @@ function getSequence(req, res, next) {
                 res.contentType('application/json');
                 return res.send(theSequence.sequence);
             } else {
-                return res.send('Animation not found', 404);
+                return next('Animation not found');
             }
         });
     });
@@ -156,9 +165,10 @@ function getSequence(req, res, next) {
 function getImages(req, res, next) {
     req.app.locals.userAPI.getUserImages(req.session.user._id,
         function(err, images) {
-        if (err) { return res.send(err, 500); }
+        if (err) { return next(err); }
         if (typeof images === 'undefined') {
-            return next();
+            return next({msg: 'Bad user account found: ' + 
+                req.session.user._id, status: 500});
         }
         for (var i=0; i < images.length; ++i) {
             images[i] = {id: images[i]};
@@ -171,12 +181,13 @@ function getImages(req, res, next) {
 function getAnimations(req, res, next) {
     req.app.locals.userAPI.getUserGifs(req.session.user._id,
         function(err, images) {
+        if (err) { return next(err); }
         if (typeof images === 'undefined') {
-            return next();
+            return next({msg: 'Bad user account found: ' + 
+                req.session.user._id, status: 500});
         }
-        if (err) { return res.send(err, 500); }
         res.contentType('application/json');
-        res.send(images);
+        return res.send(images);
     });
 }
 
@@ -184,7 +195,7 @@ function addImageToSequence(req, res, next) {
     req.app.locals.userAPI.addImageToUserSequence(req.body.imageId,
         req.session.user._id, function(err, seq) {
         if (err) {
-            return res.send(err, 500);
+            return next(err);
         }
         res.send(seq);
     });
@@ -194,7 +205,7 @@ function generateGif(req, res, next) {
     req.app.locals.imagesAPI.createGif({sequence: req.body.sequence,
         api: req.app.locals.userAPI,
         id: req.session.user._id }, function(err, result) {
-        if (err) { return res.send(err, 500); }
+        if (err) { return next(err); }
         result = { id: result,
                    url: config.baseUrl + '/user/'  + 
             req.session.user.screenName + '/' + result};
@@ -204,11 +215,11 @@ function generateGif(req, res, next) {
 
 function generateGifFromSequence(req, res, next) {
     req.app.locals.userAPI.getUserImages(req.session.user._id, function(err, result) {
-        if (err) { return res.send(err, 500); }
+        if (err) { return next(err); }
         req.app.locals.imagesAPI.createGif({sequence: result,
             api: req.app.locals.userAPI,
             id: req.session.user._id }, function(err, result) {
-            if (err) { return res.send(err, 500); }
+            if (err) { return next(err); }
             result = { id: result,
                        url: config.baseUrl + '/user/'  + 
                 req.session.user.screenName + '/' + result};

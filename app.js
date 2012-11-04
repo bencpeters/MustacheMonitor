@@ -16,7 +16,8 @@ var express = require('express')
 
 var db = require('mongoskin').db(config.mongohq.url)
   , imagesAPI = require('./model/image')
-  , userAPI = require('./model/user');
+  , userAPI = require('./model/user')
+  , errors = require('./lib/errors');
 
 db.open(function(err) {
     if (err) {console.log("Error connecting to mongo: " + err);}
@@ -48,8 +49,8 @@ hbs.registerHelper('userAnimations', function(user, options) {
 hbs.registerHelper('loggedIn', function(item, options) {
     return this.loggedIn;
 });
-
 app.configure(function(){
+  app.use(express.errorHandler());
   app.set('port', process.env.PORT || 3000);
   app.set('views', __dirname + '/views');
   app.set('view engine', 'hbs');
@@ -70,20 +71,15 @@ app.configure(function(){
         })();
         next();
   });
-  app.use(app.router);
   app.use(express.static(path.join(__dirname, 'public')));
+  app.use(app.router);
+  app.use(errors.errorHandling);
 });
 
   app.locals({
         imagesAPI: imagesAPI,
         userAPI: userAPI
   });
-    
-
-app.configure('development', function(){
-  app.use(express.errorHandler());
-});
-
 app.get('/', routes.index);
 app.get('/images/:imageId', session.requiresLogin, routes.viewImage);
 app.get('/images/delete/:imageId', session.requiresLogin, routes.deleteImage);
@@ -108,13 +104,23 @@ app.get('/user/:screenName', user.getUserPage );
 app.get('/user/:screenName/:gifHash', user.getAnimationPage );
 app.get('/user/:screenName/:gifHash/gif', user.getGif);
 
-// session routes
-app.get('/session', session.index );
-app.get('/session/create', session.create );
-
 //upload routes
 app.get('/upload', session.requiresLogin, upload.uploadPage);
 app.post('/upload', session.requiresLogin, upload.uploadImage);
+
+//catch-alls for errors and not found
+app.all('/404', function(req, res) { 
+    var status = req.session.errorStatus ? req.session.errorStatus : 404;
+    delete req.session.errorStatus;
+    res.status(status).render('404'); 
+});
+app.all('/500', function(req, res) { throw { msg: 'Hit 500 path', status: 500}; });
+app.all('*', function(req, res) { throw { msg: 'Invalid route', status: 404}; });
+
+process.on('uncaughtException', function(err) {
+    console.log('uncaughtException: ' + err);
+    console.log(err.stack);
+});
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));

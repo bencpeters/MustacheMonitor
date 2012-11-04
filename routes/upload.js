@@ -4,12 +4,12 @@ exports.uploadImage = function(req, res, next) {
         imagesAPI.saveImage({api: req.app.locals.userAPI,
             id: req.session.user._id}, req.files.displayImage.path,
             function(err, id) {
-            if (err) { return res.send('Error: ' + err, 500); }
+            if (err) { return next(err); }
             res.contentType('application/json');
-            res.send({ 'id': id });
+            return res.send({ 'id': id });
         });
     } else {
-        res.send('Error: No image sent!', 500);
+        return next({msg: 'No image sent!', status: 400});
     }
 };
 
