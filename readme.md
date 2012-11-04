@@ -1,8 +1,8 @@
-#Mustache Monitor
+##Mustache Monitor
 
 http://mustachemonitor.com
 
-##Startup Weekend Ogden (11/1 - 11/3/12) Project
+#Startup Weekend Ogden (11/1 - 11/3/12) Project
 
 About Team Mustache
 
