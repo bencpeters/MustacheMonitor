@@ -4,7 +4,7 @@
  */
 
 exports.index = function(req, res, next){
-  res.render('index', { title: 'Home' });
+  res.render('index', { title: 'Share Your Stache' });
 };
 
 exports.viewImage = function(req, res, next) {
