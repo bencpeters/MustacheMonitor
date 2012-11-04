@@ -1,7 +1,8 @@
-Mustache Monitor
+#Mustache Monitor
+
 http://mustachemonitor.com
 
-Start Up Weekend Ogden Project
+##Startup Weekend Ogden (11/1 - 11/3/12) Project
 
 About Team Mustache
 
@@ -11,12 +12,12 @@ Mustache Monitor is an iOS app to document daily stache production and create an
 
 Show your MO!
 
-    Melissa Bielaczyc - Business - @fablifyit
-    Kevin Cocco - Developer - @kcocco
-    Austin Craig - Meme Expert - @austinmcraig
-    Parker Donat - Business - @parkerdonat
-    Porter Haney - Hustler - @porterhaney
-    Ethan Pearson - Designer - @VaedaSynapse
-    Ben Peters - Developer - @bencpeters
-    Mike Reid - Developer - @pixelchutes
-    Nick Walter - Developer - @nickchuckwalter
+Melissa Bielaczyc - Business - @fablifyit
+Kevin Cocco - Developer - @kcocco
+Austin Craig - Meme Expert - @austinmcraig
+Parker Donat - Business - @parkerdonat
+Porter Haney - Hustler - @porterhaney
+Ethan Pearson - Designer - @VaedaSynapse
+Ben Peters - Developer - @bencpeters
+Mike Reid - Developer - @pixelchutes
+Nick Walter - Developer - @nickchuckwalter
