@@ -1,7 +1,7 @@
 <div class="page-header">
-	<h1>{{user.screenName}}</h1>
+	<h1><img src="//www.gravatar.com/avatar/{{user.emailHash}}" width="40" title="{{screenName}}" /> {{user.screenName}}</h1>
 </div>
 
 {{#each user.animations}}
-    <a href="{{url}}" title="{{title}}"><img src="{{gif}}" width="150" alt="{{title}}" /></a>
+    <a href="{{link}}" title="{{title}}"><img src="{{gif}}" width="150" alt="{{title}}" /></a>
 {{/each}}

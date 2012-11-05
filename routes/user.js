@@ -60,15 +60,22 @@ function getUserPage(req, res, next){
         function(err, user) {
         if (err) { return next(err); }
         if (user) {
-            var args = { screenName: user.screenName,
-                animations: [] };
+        	var email = user.email.toLowerCase();
+            var args = {
+            	screenName: user.screenName
+            	,animations: []
+                ,emailHash: crypto.createHash('md5').update(email).digest("hex")
+            };
+
             for (var i=0; i < user.animations.length; ++i) {
-                args.animations.push({gif: util.getGifPath(user.animations[i].gif, user.screenName),
+                args.animations.push({
+                	gif: util.getGifPath(user.animations[i].gif, user.screenName),
                     link: util.getAnimationPagePath(user.animations[i].gif, user.screenName),
-                    title: user.animations[i].title});
+                    title: user.animations[i].title
+                });
             }
             return res.render('user-public', { title: user.screenName,
-                user: args 
+                user: args
             });
 		} else {
             return next();
