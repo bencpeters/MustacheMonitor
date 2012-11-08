@@ -70,6 +70,7 @@ app.get('/user/generate', session.isMustacheAficionado, user.generateGifFromSequ
 app.get('/user/images/delete', session.isMustacheAficionado, user.deleteAllImages);
 app.get('/user/animations/delete', session.isMustacheAficionado, user.deleteAllGifs);
 app.get('/upload', session.isMustacheAficionado, upload.uploadPage);
+app.get('/animation/upload', session.isMustacheAficionado, upload.uploadAnimationPage);
 
 //loggedin user routes
 app.get('/image/:imageId', session.requiresLogin, routes.viewImage);
