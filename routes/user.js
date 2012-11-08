@@ -188,7 +188,7 @@ function getImages(req, res, next) {
                 req.session.user._id, status: 500});
         }
         for (var i=0; i < images.length; ++i) {
-            images[i] = {id: images[i]};
+            images[i] = {id: images[i], block: ( ( (i % 3 == 0 ) ? 'a' : ( (i % 2) ? 'b' : 'c' ) ) )  };
         }
         res.contentType('application/json');
         res.send(images);
