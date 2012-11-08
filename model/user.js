@@ -85,8 +85,9 @@ function addImageToUser(params, callback) {
     if (saveGif) {
         var title = (params.title !== null && typeof params.title !== 'undefined')
         ? params.title : "My Awesome Stache";
+        var time = new Date().getTime();
         db.collection('users').updateById(user, {$push : { 'animations' :
-            {gif: imageID, title: title, sequence: params.sequence}}},
+            {gif: imageID, title: title, time: time, sequence: params.sequence}}},
             function(err, res) {
             if (err) { return callback.call(imageID, err); }
             return callback.call(res, null, res);
