@@ -92,6 +92,8 @@ function getAnimation(req, res, next){
 		var gifTitle = this.title;
                 if (this.time) {
                     var gifDate = util.getDateString(new Date(this.time));
+                } else {
+                    var gifDate = 'Nov 3<sup>rd</sup>, 2012';
                 }
 		req.app.locals.userAPI.getUserByScreenName(req.params.screenName,
             function(err, user) {
