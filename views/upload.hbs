@@ -1,5 +1,6 @@
 <h1>File Upload Test</h1>
 <form action="/upload" method="post" enctype="multipart/form-data">
-    <input type="file" name="file" />
+    <input type="hidden" name="origin" value="web" />
+    <input type="file" name="displayImage" />
     <input type="submit" value="Upload" />
 </form>
