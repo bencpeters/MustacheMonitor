@@ -90,7 +90,9 @@ function getAnimation(req, res, next){
 		var url = 'http://' + req.headers.host + req.url;
 		var gifUrl = 'http://' + path.join(req.headers.host, req.url, 'gif');
 		var gifTitle = this.title;
-
+                if (this.time) {
+                    var gifDate = util.getDateString(new Date(this.time));
+                }
 		req.app.locals.userAPI.getUserByScreenName(req.params.screenName,
             function(err, user) {
             if (err) { return next(err); }
@@ -98,6 +100,7 @@ function getAnimation(req, res, next){
 			var emailHash = crypto.createHash('md5').update(email).digest("hex");
         	return res.render("user-animation", {title: gifTitle,
                 gifTitle: gifTitle,
+                gifDate: gifDate,
                 url: url,
                 gifUrl: gifUrl,
                 screenName: req.params.screenName,
