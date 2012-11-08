@@ -65,11 +65,11 @@ app.configure(function(){
 
 
 //admin/testing routes
-app.get('/images/delete/:imageId', session.isMustacheAficionado, session.requiresLogin, routes.deleteImage);
-app.get('/user/generate', session.isMustacheAficionado, session.requiresLogin, user.generateGifFromSequence);
-app.get('/user/images/delete', session.isMustacheAficionado, session.isMustacheAficionado, session.requiresLogin, user.deleteAllImages);
-app.get('/user/animations/delete', session.isMustacheAficionado, session.requiresLogin, user.deleteAllGifs);
-app.get('/upload', session.isMustacheAficionado, session.requiresLogin, upload.uploadPage);
+app.get('/images/delete/:imageId', session.isMustacheAficionado, routes.deleteImage);
+app.get('/user/generate', session.isMustacheAficionado, user.generateGifFromSequence);
+app.get('/user/images/delete', session.isMustacheAficionado, user.deleteAllImages);
+app.get('/user/animations/delete', session.isMustacheAficionado, user.deleteAllGifs);
+app.get('/upload', session.isMustacheAficionado, upload.uploadPage);
 
 //loggedin user routes
 app.get('/image/:imageId', session.requiresLogin, routes.viewImage);
