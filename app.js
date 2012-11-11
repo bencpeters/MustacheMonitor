@@ -53,7 +53,7 @@ app.configure(function(){
         })();
         next();
   });
-  app.use(express.static(path.join(__dirname, 'public')));
+  app.use(express.static(path.join(__dirname, 'public'), { maxAge: 2592000000 })); // One Month
   app.use(app.router);
   app.use(errors.errorHandling);
 });

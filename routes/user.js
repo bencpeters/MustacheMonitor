@@ -115,10 +115,18 @@ function getAnimation(req, res, next){
 function getGif(req, res, next) {
     req.app.locals.userAPI.checkImageOwnership(req.params.screenName, req.params.gifHash, function(err, hash) {
         if (err) { return next(err); }
+
         req.app.locals.imagesAPI.getImage(hash, function(err, data) {
             if (err) { return next(err); }
             res.contentType('image/gif');
-            res.end(data);
+            res.header('Cache-Control', 'public, max-age=2592000');
+            res.header('Expires', new Date(Date.now() + 2592000000).toUTCString());
+            res.header('ETag', '"'+req.params.gifHash+'"' );
+            res.header('Last-Modified', new Date(Date.now() - 360000).toUTCString()); // TODO: Use image timestamp
+            if( req.header('If-None-Match') === '"'+req.params.gifHash+'"' ){
+                res.writeHead(304, res.headers);
+                res.end();
+            } else res.end(data);
         });
     });
 }

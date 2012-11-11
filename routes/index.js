@@ -14,7 +14,15 @@ exports.viewImage = function(req, res, next) {
         req.app.locals.imagesAPI.getImage(hash, function(err, data) {
             if (err) { return next(err); }
             res.contentType('image/jpg');
-            res.end(data);
+            res.header('Cache-Control', 'public, max-age=2592000');
+            res.header('Expires', new Date(Date.now() + 2592000000).toUTCString());
+            res.header('ETag', '"'+req.params.imageId+'"' );
+            res.header('Last-Modified', new Date(Date.now() - 360000).toUTCString());
+            if( req.header('If-None-Match') === '"'+req.params.imageId+'"' ){
+                res.writeHead(304, res.headers);
+                res.end();
+            } else res.end(data);
+
         });
   });
 };
